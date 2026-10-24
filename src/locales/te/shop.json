@@ -1,0 +1,23 @@
+{
+  "addedToQuote": "కోట్‌కు జోడించబడింది ✓",
+  "quoteBasket": "మీ కోట్ జాబితా",
+  "quoteEmpty": "మీ కోట్ జాబితా ఖాళీగా ఉంది. కేటలాగ్ నుండి ఉత్పత్తులు జోడించండి.",
+  "customerName": "మీ పేరు",
+  "customerPhone": "మీ ఫోన్ నంబర్",
+  "submitQuote": "కోట్ పొందండి",
+  "quoteCreated": "మీ కోట్ {id} సిద్ధంగా ఉంది.",
+  "total": "మొత్తం",
+  "remove": "తీసివేయండి",
+  "searchTitle": "ఉత్పత్తులను శోధించండి",
+  "searchPlaceholder": "పేరు టైప్ చేయండి, ఉదా: దీపం, lamp",
+  "searchButton": "శోధించు",
+  "voiceSearch": "మాట్లాడి శోధించండి",
+  "voiceUnsupported": "ఈ ఫోన్‌లో వాయిస్ శోధన అందుబాటులో లేదు. దయచేసి టైప్ చేయండి.",
+  "noMatch": "ఉత్పత్తులేమీ కనబడలేదు. వేరే పదం ప్రయత్నించండి.",
+  "relatedItems": "ఇవి కూడా నచ్చవచ్చు",
+  "backToCatalogue": "కేటలాగ్‌కు తిరిగి",
+  "printQuote": "ప్రింట్ / PDF గా సేవ్",
+  "quoteNumber": "కోట్",
+  "qty": "సంఖ్య",
+  "listening": "వింటోంది…"
+}

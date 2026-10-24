@@ -1,0 +1,23 @@
+{
+  "addedToQuote": "कोटेशन में जोड़ा गया ✓",
+  "quoteBasket": "आपकी कोटेशन सूची",
+  "quoteEmpty": "आपकी कोटेशन सूची खाली है। कैटलॉग से उत्पाद जोड़ें।",
+  "customerName": "आपका नाम",
+  "customerPhone": "आपका फ़ोन नंबर",
+  "submitQuote": "कोटेशन प्राप्त करें",
+  "quoteCreated": "आपका कोटेशन {id} तैयार है।",
+  "total": "कुल",
+  "remove": "हटाएँ",
+  "searchTitle": "उत्पाद खोजें",
+  "searchPlaceholder": "नाम लिखें, जैसे: दीया, lamp",
+  "searchButton": "खोजें",
+  "voiceSearch": "बोलकर खोजें",
+  "voiceUnsupported": "इस फ़ोन पर बोलकर खोजना उपलब्ध नहीं है। कृपया लिखें।",
+  "noMatch": "कोई उत्पाद नहीं मिला। कोई और शब्द आज़माएँ।",
+  "relatedItems": "आपको ये भी पसंद आ सकते हैं",
+  "backToCatalogue": "कैटलॉग पर वापस",
+  "printQuote": "प्रिंट करें / PDF सहेजें",
+  "quoteNumber": "कोटेशन",
+  "qty": "मात्रा",
+  "listening": "सुन रहा है…"
+}

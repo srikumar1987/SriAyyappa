@@ -12,7 +12,9 @@ export default function AdminHomePage({ params }: { params: { locale: string } }
     { href: '/admin/lots/new', label: t(locale, 'stockArrived'), enabled: true },
     { href: '/admin/sales/new', label: t(locale, 'sale'), enabled: true },
     { href: '/admin/stock', label: t(locale, 'stock'), enabled: true },
-    { href: '/admin/reports', label: t(locale, 'reports'), enabled: false },
+    { href: '/admin/reports', label: t(locale, 'reports'), enabled: true },
+    { href: '/admin/quotes', label: t(locale, 'quotesTitle'), enabled: true },
+    { href: '/admin/overhead', label: t(locale, 'overheadTitle'), enabled: true },
     { href: '/admin/products/new', label: t(locale, 'addProduct'), enabled: false },
   ];
 

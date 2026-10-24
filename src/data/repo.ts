@@ -28,18 +28,46 @@ export interface SaleRecord {
   customerPhone: string;
 }
 
+export interface OverheadRecord {
+  overheadId: string;
+  month: string; // YYYY-MM
+  type: string;
+  amount: number;
+  note: string;
+}
+
+export interface QuoteItem {
+  productId: string;
+  qty: number;
+  unitPrice: number;
+}
+
+export interface QuoteRecord {
+  quoteId: string;
+  createdAt: string;
+  customerName: string;
+  customerPhone: string;
+  language: string;
+  items: QuoteItem[];
+  total: number;
+  status: 'draft' | 'sent' | 'accepted' | 'expired';
+}
+
 export interface StoreData {
   lots: LotRecord[];
   sales: SaleRecord[];
+  overhead: OverheadRecord[];
+  quotes: QuoteRecord[];
 }
 
 const FILE = path.join(process.cwd(), '.local', 'store.json');
+const emptyStore = (): StoreData => ({ lots: [], sales: [], overhead: [], quotes: [] });
 
 export async function readStore(): Promise<StoreData> {
   try {
-    return JSON.parse(await readFile(FILE, 'utf8')) as StoreData;
+    return { ...emptyStore(), ...(JSON.parse(await readFile(FILE, 'utf8')) as Partial<StoreData>) };
   } catch (e) {
-    if ((e as NodeJS.ErrnoException).code === 'ENOENT') return { lots: [], sales: [] };
+    if ((e as NodeJS.ErrnoException).code === 'ENOENT') return emptyStore();
     throw e;
   }
 }

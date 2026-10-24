@@ -8,6 +8,7 @@ const navLinkClass = 'text-white hover:text-gold transition-colors whitespace-no
 
 export default function Header() {
   const t = useTranslations('common');
+  const shop = useTranslations('shop');
 
   return (
     <header className="sacred-header">
@@ -31,6 +32,7 @@ export default function Header() {
           <Link href="/kerala" className={navLinkClass}>{t('kerala')}</Link>
           <Link href="/about" className={navLinkClass}>{t('about')}</Link>
           <Link href="/contact" className={navLinkClass}>{t('contact')}</Link>
+          <Link href="/quote" className={navLinkClass}>{shop('quoteBasket')}</Link>
         </nav>
       </div>
     </header>

@@ -1,3 +1,5 @@
+import { extraEn, extraMl } from './extra';
+
 // Admin screens: Malayalam and English. Other languages fall back to English until reviewed.
 const en = {
   pinTitle: 'Admin sign-in',
@@ -104,7 +106,10 @@ const ml: Record<keyof typeof en, string> = {
 };
 
 export function t(locale: string, key: string, vars?: Record<string, string | number>): string {
-  const dict = (locale === 'ml' ? ml : en) as Record<string, string>;
+  const dict = {
+    ...(locale === 'ml' ? ml : en),
+    ...(locale === 'ml' ? extraMl : extraEn),
+  } as Record<string, string>;
   const raw = dict[key] ?? (en as Record<string, string>)[key] ?? key;
   if (!vars) return raw;
   return Object.entries(vars).reduce((s, [k, v]) => s.replace(`{${k}}`, String(v)), raw);

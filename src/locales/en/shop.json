@@ -1,0 +1,23 @@
+{
+  "addedToQuote": "Added to quote ✓",
+  "quoteBasket": "Your quote list",
+  "quoteEmpty": "Your quote list is empty. Add products from the catalogue.",
+  "customerName": "Your name",
+  "customerPhone": "Your phone number",
+  "submitQuote": "Get quotation",
+  "quoteCreated": "Your quotation {id} is ready.",
+  "total": "Total",
+  "remove": "Remove",
+  "searchTitle": "Search products",
+  "searchPlaceholder": "Type a name, e.g. vilakku, lamp, ദീപം",
+  "searchButton": "Search",
+  "voiceSearch": "Speak to search",
+  "voiceUnsupported": "Voice search is not available on this phone. Please type.",
+  "noMatch": "No products found. Try another word.",
+  "relatedItems": "You may also like",
+  "backToCatalogue": "Back to catalogue",
+  "printQuote": "Print or save as PDF",
+  "quoteNumber": "Quotation",
+  "qty": "Qty",
+  "listening": "Listening…"
+}
