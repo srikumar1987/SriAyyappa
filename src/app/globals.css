@@ -61,7 +61,7 @@ body::before {
 }
 
 .product-card::before {
-  content: 'ൠ';
+  content: 'ॐ';
   position: absolute;
   top: 8px;
   right: 8px;
@@ -78,26 +78,16 @@ body::before {
 
 /* Sacred header */
 .sacred-header {
-  background: linear-gradient(135deg, #FF9933 0%, #C41E3A 100%);
-  padding: 20px 40px;
+  background: linear-gradient(135deg, #800000 0%, #C41E3A 100%);
+  padding: 16px 20px;
   position: relative;
-  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(128, 0, 0, 0.25);
 }
 
-.sacred-header::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
-  animation: rotate 60s linear infinite;
-}
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+@media (min-width: 768px) {
+  .sacred-header {
+    padding: 20px 40px;
+  }
 }
 
 /* Language switcher */
@@ -213,3 +203,10 @@ body::before {
   left: 50%;
   transform: translateX(-50%);
 }
+
+/* Each language uses a font that actually contains its script */
+:lang(hi), :lang(hi) * { font-family: 'Noto Sans Devanagari', 'Lato', sans-serif; }
+:lang(kn), :lang(kn) * { font-family: 'Noto Sans Kannada', 'Lato', sans-serif; }
+:lang(ml), :lang(ml) * { font-family: 'Noto Sans Malayalam', 'Lato', sans-serif; }
+:lang(te), :lang(te) * { font-family: 'Noto Sans Telugu', 'Lato', sans-serif; }
+:lang(ta), :lang(ta) * { font-family: 'Noto Sans Tamil', 'Lato', sans-serif; }

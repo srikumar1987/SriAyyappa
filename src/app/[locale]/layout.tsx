@@ -1,8 +1,14 @@
+import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
 import '../globals.css';
+
+export const metadata: Metadata = {
+  title: 'Ayyappa Pooja Store',
+  description: 'Sacred Pooja Items & Authentic Kerala Products',
+};
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));

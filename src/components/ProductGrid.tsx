@@ -26,7 +26,7 @@ export default function ProductGrid({ products, filterCategories }: ProductGridP
 
   const buttonClass = (isActive: boolean) =>
     `px-6 py-2 rounded-full border-2 border-saffron transition-all ${
-      isActive ? 'bg-saffron text-white font-medium' : 'bg-white text-dark-brown hover:bg-saffron hover:text-white'
+      isActive ? 'bg-deep-red border-deep-red text-white font-medium' : 'bg-white text-dark-brown hover:bg-saffron hover:text-white'
     }`;
 
   return (

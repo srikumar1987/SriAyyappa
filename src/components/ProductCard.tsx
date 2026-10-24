@@ -19,7 +19,7 @@ export default function ProductCard({ product }: { product: Product }) {
   };
 
   return (
-    <div className="product-card scroll-reveal">
+    <div className="product-card">
       <div className="product-image relative rounded-lg overflow-hidden mb-4 bg-cream">
         <img src={product.image} alt={productName} className="w-full h-48 object-cover" />
       </div>
