@@ -155,7 +155,7 @@ export async function addSaleToSheets(sale: {
       spreadsheetId,
       range: 'Sales!A:L',
       valueInputOption: 'USER_ENTERED',
-      resource: {
+      requestBody: {
         values: [[
           saleId,
           dateTime,
@@ -199,7 +199,7 @@ export async function addLotToSheets(lot: {
       spreadsheetId,
       range: 'Lots!A:P',
       valueInputOption: 'USER_ENTERED',
-      resource: {
+      requestBody: {
         values: [[
           lotId,
           lot.productId,
