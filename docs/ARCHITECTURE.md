@@ -288,10 +288,22 @@ Definition of done for a feature
 
 ---
 
-## 15. Decisions needed from you
+## 15. Decisions (confirmed)
 
-1. **Hosting:** Vercel Pro (simplest, paid) or Cloudflare Pages / Netlify (free for commercial use, a little more setup)?
-2. **Admin sign-in:** Google account allowlist (recommended) or a 4-digit PIN for the shop tablet?
-3. **WhatsApp to customers:** pre-filled links sent by the uncle (free, recommended to start) or the Business Cloud API (automatic, needs setup and may cost money)?
-4. **Auto-translation:** on (MyMemory suggestions saved as Draft) or off (uncle and glossary only)?
-5. **Phase order:** start with the admin (inventory and sales first, recommended) or with the public catalogue?
+| Decision | Choice | Consequence |
+|---|---|---|
+| Hosting | **Cloudflare Pages** (free, commercial use allowed) | Must verify Next.js 14 App Router support on Cloudflare (adapter such as OpenNext) and that `googleapis` runs there. If it does not, fall back to Netlify. Vercel Hobby is not used. |
+| Admin sign-in | **4-digit PIN** | Store the PIN as a hash, not in plain text. Use an httpOnly session cookie, rate-limit attempts (lock for 15 minutes after 5 wrong tries), and log every admin action. Weaker than Google sign-in; revisit if the shop grows. |
+| WhatsApp to customers | **Pre-filled links** (free) | No Meta business account needed. The uncle taps Send. Business API stays in Phase 7. |
+| Build order | **Admin first** (Phases 1, 3, 4, then 2, 5, 6) | Inventory, lots, sales and stock are usable before the public site is finished. |
+| Auto-translation | Not yet decided (default: glossary + uncle; MyMemory suggestions as Draft) | Confirm before Phase 6. |
+
+Revised sequence
+1. Phase 0: accounts (you): Drive folder, Sheet from the template, service account, Cloudflare account.
+2. Phase 1: foundation (code): data layer, domain library, locale tests, CI.
+3. Phase 3: admin core (code): PIN login, add product, add lot + expenses, sales with FIFO, stock list.
+4. Phase 4: reports and overhead.
+5. Phase 2: public catalogue, search, voice, product pages.
+6. Phases 5-6: quotes, WhatsApp hand-offs, translation review, launch.
+
+Testing note: CI on GitHub Actions will run lint, typecheck, unit, contract, content and build tests on every push, so tests run without Node.js on your PC.
