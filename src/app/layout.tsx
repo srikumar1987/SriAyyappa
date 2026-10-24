@@ -1,5 +1,3 @@
-import { redirect } from 'next/navigation';
-
-export default function RootLayout() {
-  redirect('/en');
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return children;
 }

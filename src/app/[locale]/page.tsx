@@ -135,7 +135,7 @@ const mockProducts = [
     id: 'K004',
     name: {
       en: 'Achappam',
-      hi: 'ाचप्पम',
+      hi: 'अचप्पम',
       kn: 'ಅಚಪ್ಪಮ್',
       ml: 'അച്ചപ്പം',
       te: 'అచ్చప్పం',
