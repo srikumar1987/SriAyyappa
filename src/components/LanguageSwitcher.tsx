@@ -1,45 +1,20 @@
 'use client';
 
+import { useState } from 'react';
 import { useLocale } from 'next-intl';
-import { useRouter, usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { locales, defaultLocale, localeNames, localeFlags, type Locale } from '@/i18n';
+import { usePathname, useRouter } from '@/navigation';
+import { locales, localeNames, localeFlags, type Locale } from '@/i18n';
 
 export default function LanguageSwitcher() {
   const locale = useLocale() as Locale;
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const switchLanguage = (newLocale: string) => {
-    localStorage.setItem('preferred-language', newLocale);
-
-    const segments = pathname.split('/');
-    if (newLocale === defaultLocale) {
-      segments.splice(1, 1);
-    } else {
-      segments[1] = newLocale;
-    }
-    const newPath = segments.join('/').replace(/\/+/g, '/') || '/';
-
-    router.push(newPath);
+  const switchLanguage = (newLocale: Locale) => {
     setIsOpen(false);
+    router.replace(pathname, { locale: newLocale });
   };
-
-  if (!mounted) {
-    return (
-      <div className="language-button">
-        <span className="flag">{localeFlags[locale]}</span>
-        <span className="name">{localeNames[locale]}</span>
-        <span className="arrow">▼</span>
-      </div>
-    );
-  }
 
   return (
     <div className="language-switcher">
@@ -47,6 +22,7 @@ export default function LanguageSwitcher() {
         onClick={() => setIsOpen(!isOpen)}
         className="language-button"
         aria-label="Switch language"
+        aria-expanded={isOpen}
       >
         <span className="flag">{localeFlags[locale]}</span>
         <span className="name">{localeNames[locale]}</span>
@@ -55,10 +31,7 @@ export default function LanguageSwitcher() {
 
       {isOpen && (
         <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setIsOpen(false)}
-          />
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
           <div className="language-dropdown">
             {locales.map((lang) => (
               <button

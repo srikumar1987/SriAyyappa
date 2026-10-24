@@ -1,70 +1,42 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import type { Product } from '@/data/products';
+import type { Locale } from '@/i18n';
 
-interface Product {
-  id: string;
-  name: {
-    en: string;
-    hi: string;
-    kn: string;
-    ml: string;
-    te: string;
-    ta: string;
-  };
-  price: number;
-  image: string;
-  category: string;
-}
+const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '';
 
-interface ProductCardProps {
-  product: Product;
-  locale: string;
-}
-
-export default function ProductCard({ product, locale }: ProductCardProps) {
+export default function ProductCard({ product }: { product: Product }) {
   const t = useTranslations('common');
+  const locale = useLocale() as Locale;
 
-  const productName = product.name[locale as keyof typeof product.name] || product.name.en;
+  const productName = product.name[locale] || product.name.en;
 
   const handleWhatsApp = () => {
-    const message = `Hi, I'm interested in ${productName} (₹${product.price}). Is it available?`;
-    const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    const message = t('whatsappMessage', { product: productName, price: product.price });
+    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
   };
 
   return (
     <div className="product-card scroll-reveal">
       <div className="product-image relative rounded-lg overflow-hidden mb-4 bg-cream">
-        <img
-          src={product.image}
-          alt={productName}
-          className="w-full h-48 object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+        <img src={product.image} alt={productName} className="w-full h-48 object-cover" />
       </div>
 
-      <h3 className="font-serif text-lg text-dark-brown mb-2">
-        {productName}
-      </h3>
+      <h3 className="font-serif text-lg text-dark-brown mb-2">{productName}</h3>
 
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-2xl font-bold text-deep-red">
-          ₹{product.price}
-        </span>
-        <div className="flex text-gold">
-          ⭐⭐⭐⭐⭐
-        </div>
+      <div className="mb-4">
+        <span className="text-2xl font-bold text-deep-red">₹{product.price}</span>
       </div>
 
       <div className="flex gap-2">
-        <button className="sacred-button flex-1 text-sm">
-          {t('addToQuote')}
-        </button>
+        <button className="sacred-button flex-1 text-sm">{t('addToQuote')}</button>
         <button
           onClick={handleWhatsApp}
           className="sacred-button px-4 text-sm"
-          title={t('whatsapp')}
+          title={t('orderOnWhatsapp')}
+          aria-label={t('orderOnWhatsapp')}
         >
           📱
         </button>
