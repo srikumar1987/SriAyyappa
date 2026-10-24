@@ -1,0 +1,12 @@
+This folder will contain product images uploaded to Google Drive.
+
+Images should be organized by Product ID:
+- P001_Brass_Lamp/
+  - main.jpg
+  - angle1.jpg
+  - angle2.jpg
+- P002_Agarbatti/
+  - main.jpg
+  - etc.
+
+For now, placeholder images will be used.
