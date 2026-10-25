@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import AdminForm from '@/components/admin/AdminForm';
+import AdminLangToggle from '@/components/admin/AdminLangToggle';
 import { t } from '@/admin/messages';
 import { isAdminSession } from '@/lib/auth';
 import { localePath, safeLocale } from '@/lib/paths';
@@ -12,7 +13,10 @@ export default async function AdminLoginPage({ params }: { params: { locale: str
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-lg p-8">
+      <div className="w-full max-w-sm bg-white rounded-2xl shadow-lg p-8 space-y-6">
+        <div className="flex justify-center">
+          <AdminLangToggle section="/login" />
+        </div>
         <h1 className="text-2xl font-serif text-deep-red text-center mb-6">{t(locale, 'pinTitle')}</h1>
         <AdminForm
           endpoint="/api/admin/login"

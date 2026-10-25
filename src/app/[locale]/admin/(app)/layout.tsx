@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import AdminLangToggle from '@/components/admin/AdminLangToggle';
 import { isAdminSession } from '@/lib/auth';
 import { localePath, safeLocale } from '@/lib/paths';
 
@@ -14,5 +15,12 @@ export default async function AdminAppLayout({
   const locale = safeLocale(params.locale);
   if (!(await isAdminSession())) redirect(localePath(locale, '/admin/login'));
 
-  return <div className="min-h-screen max-w-3xl mx-auto p-4 md:p-8">{children}</div>;
+  return (
+    <div className="min-h-screen max-w-3xl mx-auto p-4 md:p-8">
+      <div className="flex justify-end mb-4">
+        <AdminLangToggle />
+      </div>
+      {children}
+    </div>
+  );
 }
