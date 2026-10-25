@@ -114,7 +114,7 @@ def add_formulas(wb):
         stock[f"C{r}"] = f'=IF(A{r}="","",SUMIFS(Lots!F:F,Lots!B:B,A{r}))'
         stock[f"D{r}"] = f'=IF(A{r}="","",SUMIFS(Sales!F:F,Sales!D:D,A{r}))'
         stock[f"E{r}"] = f'=IF(A{r}="","",C{r}-D{r})'
-        stock[f"F{r}"] = f'=IF(A{r}="","",IF(D{r}=0,"",MAXIFS(Sales!C:C,Sales!D:D,A{r})))'
+        stock[f"F{r}"] = f'=IF(A{r}="","",IF(D{r}=0,"",_xlfn.MAXIFS(Sales!C:C,Sales!D:D,A{r})))'
         stock[f"G{r}"] = f'=IF(A{r}="","",IF(F{r}="","",TODAY()-F{r}))'
         stock[f"H{r}"] = (
             f'=IF(A{r}="","",IF(E{r}<=0,"Out of stock",IF(E{r}<=5,"Low stock",'
