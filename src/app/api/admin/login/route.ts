@@ -6,13 +6,16 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
-  const pin = String(body?.pin ?? '');
+  const username = String(body?.username ?? '').trim();
+  const password = String(body?.password ?? '');
 
   if (isLocked()) return NextResponse.json({ ok: false, messageKey: 'locked' }, { status: 429 });
 
-  if (!/^\d{4}$/.test(pin) || !(await verifyPin(pin, process.env.ADMIN_PIN_HASH))) {
+  const expectedUser = process.env.ADMIN_USERNAME || 'admin';
+  const passwordOk = await verifyPin(password, process.env.ADMIN_PASSWORD_HASH);
+  if (username !== expectedUser || !passwordOk || password.length > 200) {
     recordFailure();
-    return NextResponse.json({ ok: false, messageKey: 'wrongPin' }, { status: 401 });
+    return NextResponse.json({ ok: false, messageKey: 'wrongLogin' }, { status: 401 });
   }
 
   clearFailures();

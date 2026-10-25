@@ -1,13 +1,14 @@
-// Creates the value for ADMIN_PIN_HASH. Usage: node scripts/make_pin_hash.mjs 1234
-const pin = process.argv[2];
-if (!/^\d{4}$/.test(pin ?? '')) {
-  console.error('Usage: node scripts/make_pin_hash.mjs <4-digit PIN>');
+// Creates the stored form of a password for ADMIN_PASSWORD_HASH (the password itself is never stored).
+// Usage: node scripts/make_pin_hash.mjs "your password"
+const secret = process.argv[2];
+if (!secret || secret.length < 4) {
+  console.error('Usage: node scripts/make_pin_hash.mjs "<password, at least 4 characters>"');
   process.exit(1);
 }
 
 const ITERATIONS = 100000;
 const salt = crypto.getRandomValues(new Uint8Array(16));
-const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveBits']);
+const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), 'PBKDF2', false, ['deriveBits']);
 const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: ITERATIONS, hash: 'SHA-256' }, key, 256);
 
 const b64 = (bytes) => Buffer.from(bytes).toString('base64');

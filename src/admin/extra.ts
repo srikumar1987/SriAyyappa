@@ -1,5 +1,8 @@
 // Admin text for reports, overhead and quotes. Same fallback rules as messages.ts.
 export const extraEn: Record<string, string> = {
+  usernameLabel: 'Username',
+  passwordLabel: 'Password',
+  wrongLogin: 'Wrong username or password. Try again.',
   reportsTitle: 'Reports',
   best30: 'Best sellers (last 30 days)',
   byQty: 'By quantity',
@@ -38,6 +41,9 @@ export const extraEn: Record<string, string> = {
 };
 
 export const extraMl: Record<string, string> = {
+  usernameLabel: 'ഉപയോക്തൃനാമം',
+  passwordLabel: 'പാസ്‌വേഡ്',
+  wrongLogin: 'ഉപയോക്തൃനാമമോ പാസ്‌വേഡോ തെറ്റാണ്. വീണ്ടും ശ്രമിക്കുക.',
   reportsTitle: 'റിപ്പോർട്ടുകൾ',
   best30: 'കൂടുതൽ വിറ്റവ (കഴിഞ്ഞ 30 ദിവസം)',
   byQty: 'എണ്ണം അനുസരിച്ച്',

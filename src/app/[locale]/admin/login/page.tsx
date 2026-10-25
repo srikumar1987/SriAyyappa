@@ -7,6 +7,8 @@ import { localePath, safeLocale } from '@/lib/paths';
 
 export const dynamic = 'force-dynamic';
 
+const inputClass = 'mt-2 w-full text-lg border-2 border-saffron rounded-xl p-3 bg-white';
+
 export default async function AdminLoginPage({ params }: { params: { locale: string } }) {
   const locale = safeLocale(params.locale);
   if (await isAdminSession()) redirect(localePath(locale, '/admin'));
@@ -17,7 +19,7 @@ export default async function AdminLoginPage({ params }: { params: { locale: str
         <div className="flex justify-center">
           <AdminLangToggle section="/login" />
         </div>
-        <h1 className="text-2xl font-serif text-deep-red text-center mb-6">{t(locale, 'pinTitle')}</h1>
+        <h1 className="text-2xl font-serif text-deep-red text-center">{t(locale, 'pinTitle')}</h1>
         <AdminForm
           endpoint="/api/admin/login"
           locale={locale}
@@ -25,16 +27,18 @@ export default async function AdminLoginPage({ params }: { params: { locale: str
           successHref={localePath(locale, '/admin')}
         >
           <label className="block text-lg">
-            {t(locale, 'pinLabel')}
+            {t(locale, 'usernameLabel')}
+            <input name="username" required maxLength={40} autoComplete="username" className={inputClass} />
+          </label>
+          <label className="block text-lg">
+            {t(locale, 'passwordLabel')}
             <input
-              name="pin"
+              name="password"
               type="password"
-              inputMode="numeric"
-              pattern="[0-9]{4}"
-              maxLength={4}
               required
-              autoComplete="off"
-              className="mt-2 w-full text-center text-3xl tracking-[0.5em] border-2 border-saffron rounded-xl p-3"
+              maxLength={200}
+              autoComplete="current-password"
+              className={inputClass}
             />
           </label>
         </AdminForm>
