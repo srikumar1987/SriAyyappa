@@ -63,7 +63,7 @@ export interface StoreData {
 const FILE = path.join(process.cwd(), '.local', 'store.json');
 const emptyStore = (): StoreData => ({ lots: [], sales: [], overhead: [], quotes: [] });
 
-export async function readStore(): Promise<StoreData> {
+async function readLocalStore(): Promise<StoreData> {
   try {
     return { ...emptyStore(), ...(JSON.parse(await readFile(FILE, 'utf8')) as Partial<StoreData>) };
   } catch (e) {
@@ -76,15 +76,28 @@ export async function readStore(): Promise<StoreData> {
 let queue: Promise<unknown> = Promise.resolve();
 
 /** Applies `mutate` to the stored data and saves it. If `mutate` throws, nothing is saved. */
-export function updateStore(mutate: (data: StoreData) => void): Promise<void> {
+function updateLocalStore(mutate: (data: StoreData) => void): Promise<void> {
   const run = queue.then(async () => {
-    const data = await readStore();
+    const data = await readLocalStore();
     mutate(data);
     await mkdir(path.dirname(FILE), { recursive: true });
     await writeFile(FILE, JSON.stringify(data, null, 2));
   });
   queue = run.catch(() => undefined);
   return run;
+}
+
+// DATA_BACKEND=sheets uses the Google Sheet; anything else uses the local file (development).
+const useSheets = () => process.env.DATA_BACKEND === 'sheets';
+
+export async function readStore(): Promise<StoreData> {
+  if (useSheets()) return (await import('./sheetsRepo')).readSheetStore();
+  return readLocalStore();
+}
+
+export async function updateStore(mutate: (data: StoreData) => void): Promise<void> {
+  if (useSheets()) return (await import('./sheetsRepo')).updateSheetStore(mutate, newId);
+  return updateLocalStore(mutate);
 }
 
 export function newId(prefix: string): string {

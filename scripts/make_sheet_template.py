@@ -53,8 +53,8 @@ SCHEMAS = {
     ),
     "Sales": (
         ["Sale_ID", "Slice_No", "Sold_At", "Product_ID", "Lot_ID", "Qty", "Unit_Price", "Unit_Cost",
-         "Total", "Payment", "Customer_Name", "Customer_Phone"],
-        [12, 10, 22, 12, 12, 10, 14, 14, 14, 14, 22, 16],
+         "Payment", "Customer_Name", "Customer_Phone", "Total"],
+        [12, 10, 22, 12, 12, 10, 14, 14, 14, 22, 16, 14],
     ),
     "Expenses": (
         ["Expense_ID", "Lot_ID", "Type", "Amount", "Date", "Note"],
@@ -79,7 +79,7 @@ DROPDOWNS = {
     ("Products", "H"): CATEGORIES,
     ("Expenses", "C"): ["Transport", "Packaging", "Loading/Unloading", "Tax", "Other"],
     ("Overhead", "C"): ["rent", "electricity", "staff", "other"],
-    ("Sales", "J"): ["cash", "upi", "whatsapp", "bank"],
+    ("Sales", "I"): ["cash", "upi", "whatsapp", "bank"],
     ("Quotes", "F"): ["draft", "sent", "accepted", "expired"],
 }
 
@@ -105,7 +105,7 @@ def add_formulas(wb):
 
     sales = wb["Sales"]
     for r in range(2, MAX_ROW + 1):
-        sales[f"I{r}"] = f'=IF(A{r}="","",F{r}*G{r})'
+        sales[f"L{r}"] = f'=IF(A{r}="","",F{r}*G{r})'
 
     stock = wb["Stock"]
     for r in range(2, MAX_ROW + 1):
