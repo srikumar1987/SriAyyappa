@@ -53,9 +53,8 @@ export default function ProductForm({ locale }: { locale: string }) {
       category: f.get('category'),
       unit,
       mrp: f.get('mrp'),
-      price: f.get('price'),
       buyPrice: f.get('buyPrice'),
-      openingQty: f.get('openingQty') || 0,
+      openingQty: f.get('openingQty'),
       supplier: f.get('supplier'),
       manufacturer: f.get('manufacturer'),
       description: f.get('description'),
@@ -130,26 +129,23 @@ export default function ProductForm({ locale }: { locale: string }) {
       </label>
 
       <div className="grid gap-4 rounded-2xl bg-cream p-4 sm:grid-cols-2">
+        <label className="block text-lg font-medium">
+          {t(locale, 'productBuyPrice')} · {unitShort[unit]}
+          <input name="buyPrice" type="number" inputMode="decimal" min={0} step="0.01" required className={inputClass} />
+        </label>
         <label className="block text-lg font-semibold text-deep-red">
           {t(locale, 'productMrp')} · {unitShort[unit]}
           <input name="mrp" type="number" inputMode="decimal" min={0.01} step="0.01" required className={inputClass} />
         </label>
-        <label className="block text-lg font-medium">
-          {t(locale, 'productPrice')} · {unitShort[unit]}
-          <input name="price" type="number" inputMode="decimal" min={0} step="0.01" placeholder={t(locale, 'productPriceHint')} className={inputClass} />
-        </label>
-        <label className="block text-lg font-medium">
-          {t(locale, 'productBuyPrice')} · {unitShort[unit]}
-          <input name="buyPrice" type="number" inputMode="decimal" min={0} step="0.01" className={inputClass} />
-        </label>
-        <label className="block text-lg font-medium">
+        <label className="block text-lg font-medium sm:col-span-2">
           {t(locale, 'productOpeningQty')} ({unitShort[unit]})
           <input
             name="openingQty"
             type="number"
             inputMode="decimal"
-            min={0}
+            min={allowsDecimal(unit) ? 0.001 : 1}
             step={allowsDecimal(unit) ? '0.001' : '1'}
+            required
             className={inputClass}
           />
         </label>

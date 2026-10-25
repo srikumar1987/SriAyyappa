@@ -52,7 +52,7 @@ export default async function NewSalePage({ params }: { params: { locale: string
         </Field>
 
         <Field label={t(locale, 'unitPrice')}>
-          <input name="unitPrice" type="number" inputMode="decimal" min={0} step="0.01" required className={inputClass} />
+          <input name="unitPrice" type="number" inputMode="decimal" min={0} step="0.01" placeholder={t(locale, 'priceDefaultHint')} className={inputClass} />
         </Field>
 
         <Field label={t(locale, 'payment')}>

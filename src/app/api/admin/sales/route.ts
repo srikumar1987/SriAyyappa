@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getProducts } from '@/lib/catalogue';
+import { findIn, getProducts } from '@/lib/catalogue';
+import { mrpOf } from '@/data/products';
 import { newId, updateStore } from '@/data/repo';
 import { allocateFifo, InsufficientStockError } from '@/domain/fifo';
 import { lotStocks } from '@/domain/stockView';
@@ -13,13 +14,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, messageKey: 'notSignedIn' }, { status: 401 });
   }
 
-  const parsed = saleSchema.safeParse(await req.json().catch(() => null));
-  const known = parsed.success && (await getProducts()).some((p) => p.id === parsed.data.productId);
-  if (!parsed.success || !known) {
+  const raw = await req.json().catch(() => null);
+  if (raw && raw.unitPrice === '') delete raw.unitPrice;
+  const parsed = saleSchema.safeParse(raw);
+  const product = parsed.success ? findIn(await getProducts(), parsed.data.productId) : undefined;
+  if (!parsed.success || !product) {
     return NextResponse.json({ ok: false, messageKey: 'invalidInput' }, { status: 400 });
   }
 
   const d = parsed.data;
+  const unitPrice = d.unitPrice ?? mrpOf(product);
   const saleId = newId('S');
   const soldAt = new Date().toISOString();
 
@@ -35,7 +39,7 @@ export async function POST(req: Request) {
           productId: d.productId,
           lotId: s.lotId,
           qty: s.qty,
-          unitPrice: d.unitPrice,
+          unitPrice,
           unitCost: s.unitCost,
           payment: d.payment,
           customerName: d.customerName,

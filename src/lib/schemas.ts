@@ -10,7 +10,7 @@ export const lotSchema = z.object({
   receivedOn: isoDate,
   qtyReceived: z.coerce.number().positive().max(100000), // decimals allowed for kg / litre
   buyPriceUnit: z.coerce.number().nonnegative().max(1000000),
-  sellingPriceUnit: z.coerce.number().nonnegative().max(1000000),
+  sellingPriceUnit: z.coerce.number().nonnegative().max(1000000).optional(), // defaults to the product MRP
   lotExpensesTotal: z.coerce.number().nonnegative().max(10000000).default(0),
   expenseNote: z.string().trim().max(200).default(''),
 });
@@ -18,7 +18,7 @@ export const lotSchema = z.object({
 export const saleSchema = z.object({
   productId: z.string().min(1).max(20),
   qty: z.coerce.number().positive().max(100000), // decimals allowed for kg / litre
-  unitPrice: z.coerce.number().nonnegative().max(1000000),
+  unitPrice: z.coerce.number().nonnegative().max(1000000).optional(), // defaults to the product MRP
   payment: z.enum(PAYMENTS),
   customerName: z.string().trim().max(80).default(''),
   customerPhone: z.string().trim().regex(/^[0-9+ ]{0,15}$/).default(''),

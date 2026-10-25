@@ -10,8 +10,8 @@ export const dynamic = 'force-dynamic';
 
 const optionalName = z.string().trim().max(120).default('');
 const CATEGORY_KEYS = Object.keys(categoryLabel) as [Category, ...Category[]];
-const money = z.coerce.number().nonnegative().max(1000000);
 
+// MRP is the price the store sets and sells at. Every product is added with the price it was bought for.
 const productSchema = z.object({
   names: z.object({
     ml: optionalName,
@@ -24,9 +24,8 @@ const productSchema = z.object({
   category: z.enum(CATEGORY_KEYS),
   unit: z.enum(UNITS),
   mrp: z.coerce.number().positive().max(1000000),
-  price: money.optional(), // our selling price; defaults to MRP
-  buyPrice: money.optional(),
-  openingQty: z.coerce.number().nonnegative().max(100000).default(0),
+  buyPrice: z.coerce.number().nonnegative().max(1000000),
+  openingQty: z.coerce.number().positive().max(100000),
   supplier: z.string().trim().max(80).default(''),
   manufacturer: z.string().trim().max(80).default(''),
   description: z.string().trim().max(500).default(''),
@@ -43,12 +42,13 @@ export async function POST(req: Request) {
   }
 
   const raw = await req.json().catch(() => null);
-  // Empty optional number fields arrive as "" from the form; treat them as not given.
-  for (const k of ['price', 'buyPrice']) if (raw && raw[k] === '') delete raw[k];
+  if (raw && raw.buyPrice === '') delete raw.buyPrice;
+  if (raw && raw.openingQty === '') delete raw.openingQty;
 
   const parsed = productSchema.safeParse(raw);
   if (!parsed.success) {
-    return NextResponse.json({ ok: false, messageKey: 'invalidInput' }, { status: 400 });
+    const missing = parsed.error.issues.some((i) => i.path[0] === 'buyPrice' || i.path[0] === 'openingQty');
+    return NextResponse.json({ ok: false, messageKey: missing ? 'buyPriceRequired' : 'invalidInput' }, { status: 400 });
   }
   const d = parsed.data;
   const names = Object.fromEntries(Object.entries(d.names).filter(([, v]) => v));
@@ -58,11 +58,7 @@ export async function POST(req: Request) {
   if (!allowsDecimal(d.unit) && !Number.isInteger(d.openingQty)) {
     return NextResponse.json({ ok: false, messageKey: 'wholeNumberQty' }, { status: 400 });
   }
-  if (d.openingQty > 0 && d.buyPrice === undefined) {
-    return NextResponse.json({ ok: false, messageKey: 'buyPriceRequired' }, { status: 400 });
-  }
 
-  const price = d.price ?? d.mrp;
   const productId = newId('P');
   const imageUrl = d.imageDataUrl
     ? await saveProductImage(productId, Buffer.from(d.imageDataUrl.split(',')[1], 'base64'))
@@ -73,7 +69,7 @@ export async function POST(req: Request) {
     data.products.push({
       productId,
       category: d.category,
-      price,
+      price: d.mrp,
       mrp: d.mrp,
       unit: d.unit,
       manufacturer: d.manufacturer,
@@ -81,20 +77,18 @@ export async function POST(req: Request) {
       names,
       imageUrl,
     });
-    // Opening stock becomes the first lot, so stock, cost and profit work from day one.
-    if (d.openingQty > 0 && d.buyPrice !== undefined) {
-      data.lots.push({
-        lotId: newId('L'),
-        productId,
-        receivedOn: today,
-        supplier: d.supplier || 'Opening stock',
-        qtyReceived: d.openingQty,
-        buyPriceUnit: d.buyPrice,
-        sellingPriceUnit: price,
-        lotExpensesTotal: 0,
-        expenseNote: '',
-      });
-    }
+    // The purchase becomes the first lot, so stock, cost and profit work from day one.
+    data.lots.push({
+      lotId: newId('L'),
+      productId,
+      receivedOn: today,
+      supplier: d.supplier || 'Opening stock',
+      qtyReceived: d.openingQty,
+      buyPriceUnit: d.buyPrice,
+      sellingPriceUnit: d.mrp,
+      lotExpensesTotal: 0,
+      expenseNote: '',
+    });
   });
 
   return NextResponse.json({ ok: true, messageKey: 'productSaved', vars: { id: productId } });

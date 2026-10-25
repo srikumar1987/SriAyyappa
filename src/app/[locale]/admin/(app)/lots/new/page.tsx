@@ -56,7 +56,7 @@ export default async function NewLotPage({ params }: { params: { locale: string 
         </Field>
 
         <Field label={t(locale, 'sellingPrice')}>
-          <input name="sellingPriceUnit" type="number" inputMode="decimal" min={0} step="0.01" required className={inputClass} />
+          <input name="sellingPriceUnit" type="number" inputMode="decimal" min={0} step="0.01" placeholder={t(locale, 'priceDefaultHint')} className={inputClass} />
         </Field>
 
         <Field label={t(locale, 'otherExpenses')}>

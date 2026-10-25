@@ -22,7 +22,6 @@ export default function ProductCard({ product }: { product: Product }) {
   const name = productName(product, locale);
   const secondName = locale === 'en' ? product.name.ml : product.name.en;
   const mrp = mrpOf(product);
-  const saving = Math.max(0, Math.round((mrp - product.price) * 100) / 100);
   const per = unitPer[unitOf(product)][locale];
 
   const handleAdd = () => {
@@ -32,7 +31,7 @@ export default function ProductCard({ product }: { product: Product }) {
   };
 
   const handleWhatsApp = () => {
-    const message = t('whatsappMessage', { product: name, price: product.price });
+    const message = t('whatsappMessage', { product: name, price: mrp });
     window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -50,11 +49,6 @@ export default function ProductCard({ product }: { product: Product }) {
             <span className="block text-[10px] uppercase tracking-widest opacity-80">{c('mrp')}</span>
             <span className="block text-xl font-bold leading-none">{inr(mrp)}</span>
           </div>
-          {saving > 0 && (
-            <div className="absolute right-3 top-3 rounded-full bg-gold px-3 py-1 text-xs font-semibold text-dark-brown shadow">
-              {c('youSave', { amount: saving })}
-            </div>
-          )}
         </div>
         <div className="px-4 pt-4">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-saffron">
@@ -68,14 +62,7 @@ export default function ProductCard({ product }: { product: Product }) {
       </Link>
 
       <div className="mt-auto px-4 pb-4 pt-3">
-        <p className="text-sm text-dark-brown/80">
-          {saving > 0 && (
-            <>
-              {c('ourPrice')}: <strong className="text-base text-dark-brown">{inr(product.price)}</strong>{' '}
-            </>
-          )}
-          <span className="text-dark-brown/60">{per}</span>
-        </p>
+        <p className="text-sm text-dark-brown/60">{per}</p>
         <div className="mt-3 flex gap-2">
           <button
             onClick={handleAdd}
