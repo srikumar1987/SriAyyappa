@@ -1,5 +1,6 @@
-"""Generates the store data workbook (upload to Google Drive -> open with Google Sheets).
+"""Generates the store data workbook. Upload to Google Drive, then open with Google Sheets.
 
+The column names here are the contract with src/data/repo.ts. Do not rename them.
 Run:  python scripts/make_sheet_template.py
 Output: data/Ayyappa_Pooja_Store_Data.xlsx
 """
@@ -37,50 +38,49 @@ PRODUCTS = [
     ("K010", "ശർക്കര", "Jaggery", "வெல்லம்", "ಬೆಲ್ಲ", "బెల్లం", "गुड़", "Kerala Products", 60),
 ]
 
-# Sheet name -> (headers, column widths)
+# Sheet name -> (headers, column widths). Formula columns are added in add_formulas().
 SCHEMAS = {
     "Products": (
-        ["Product ID", "Name_Malayalam", "Name_English", "Name_Tamil", "Name_Kannada",
+        ["Product_ID", "Name_Malayalam", "Name_English", "Name_Tamil", "Name_Kannada",
          "Name_Telugu", "Name_Hindi", "Category", "Default_Selling_Price", "Image_Folder"],
         [12, 26, 24, 26, 26, 26, 24, 18, 20, 20],
     ),
     "Lots": (
-        ["Lot ID", "Product ID", "Lot_Date", "Supplier_Name", "Buying_Price_Per_Unit",
-         "Quantity_Received", "Quantity_Sold", "Quantity_Remaining", "Selling_Price_Per_Unit",
-         "Total_Buying_Cost", "Direct_Expenses", "Total_Cost", "Expected_Revenue",
-         "Expected_Profit", "Profit_Margin_%", "Status"],
-        [10, 12, 12, 22, 18, 18, 16, 18, 20, 18, 16, 14, 18, 16, 16, 12],
+        ["Lot_ID", "Product_ID", "Received_On", "Supplier", "Buy_Price_Unit", "Qty_Received",
+         "Selling_Price_Unit", "Expense_Note",
+         "Lot_Expenses_Total", "Qty_Sold", "Qty_Remaining", "Landed_Cost_Unit", "Status"],
+        [12, 12, 14, 22, 16, 16, 18, 26, 20, 12, 16, 18, 12],
     ),
     "Sales": (
-        ["Sale ID", "Date_Time", "Lot_ID", "Product_ID", "Quantity_Sold", "Selling_Price_Per_Unit",
-         "Total_Amount", "Customer_Name", "Customer_Phone", "Payment_Method", "Delivery_Method", "Notes"],
-        [10, 18, 10, 12, 14, 20, 14, 20, 16, 16, 18, 24],
+        ["Sale_ID", "Slice_No", "Sold_At", "Product_ID", "Lot_ID", "Qty", "Unit_Price", "Unit_Cost",
+         "Total", "Payment", "Customer_Name", "Customer_Phone"],
+        [12, 10, 22, 12, 12, 10, 14, 14, 14, 14, 22, 16],
     ),
     "Expenses": (
-        ["Expense ID", "Lot ID", "Expense_Type", "Amount", "Date", "Description_Malayalam",
-         "Description_English", "Bill_Reference", "Paid_To"],
-        [12, 10, 18, 12, 12, 30, 30, 16, 20],
+        ["Expense_ID", "Lot_ID", "Type", "Amount", "Date", "Note"],
+        [12, 12, 20, 14, 14, 36],
     ),
     "Overhead": (
-        ["Overhead ID", "Period", "Expense_Type", "Amount", "Date", "Description_Malayalam",
-         "Description_English", "Is_Recurring"],
-        [12, 12, 18, 12, 12, 30, 30, 14],
+        ["Overhead_ID", "Month", "Type", "Amount", "Note"],
+        [14, 12, 16, 14, 36],
+    ),
+    "Quotes": (
+        ["Quote_ID", "Created_At", "Customer_Name", "Customer_Phone", "Language", "Status", "Total", "Items_JSON"],
+        [12, 22, 22, 16, 10, 12, 12, 60],
     ),
     "Stock": (
-        ["Product ID", "Product Name (English)", "Total Received", "Total Sold", "Remaining",
+        ["Product_ID", "Product Name (English)", "Total Received", "Total Sold", "Remaining",
          "Last Sale Date", "Days Since Last Sale", "Stock Status"],
         [12, 26, 16, 14, 14, 16, 18, 18],
     ),
 }
 
 DROPDOWNS = {
-    # (sheet, column letter): list of options
     ("Products", "H"): CATEGORIES,
     ("Expenses", "C"): ["Transport", "Packaging", "Loading/Unloading", "Tax", "Other"],
-    ("Overhead", "C"): ["Rent", "Electricity", "Internet", "Staff/Salary", "Maintenance", "Other"],
-    ("Overhead", "H"): ["Y", "N"],
-    ("Sales", "J"): ["Cash", "UPI", "WhatsApp", "Bank Transfer"],
-    ("Sales", "K"): ["Store Pickup", "Home Delivery"],
+    ("Overhead", "C"): ["rent", "electricity", "staff", "other"],
+    ("Sales", "J"): ["cash", "upi", "whatsapp", "bank"],
+    ("Quotes", "F"): ["draft", "sent", "accepted", "expired"],
 }
 
 
@@ -97,29 +97,24 @@ def style_header(ws, headers, widths):
 def add_formulas(wb):
     lots = wb["Lots"]
     for r in range(2, MAX_ROW + 1):
-        lots[f"G{r}"] = f'=IF(A{r}="","",SUMIFS(Sales!E:E,Sales!C:C,A{r}))'
-        lots[f"H{r}"] = f'=IF(A{r}="","",F{r}-G{r})'
-        lots[f"J{r}"] = f'=IF(A{r}="","",E{r}*F{r})'
-        lots[f"K{r}"] = f'=IF(A{r}="","",SUMIFS(Expenses!D:D,Expenses!B:B,A{r}))'
-        lots[f"L{r}"] = f'=IF(A{r}="","",J{r}+K{r})'
-        lots[f"M{r}"] = f'=IF(A{r}="","",I{r}*F{r})'
-        lots[f"N{r}"] = f'=IF(A{r}="","",M{r}-L{r})'
-        lots[f"O{r}"] = f'=IF(A{r}="","",IF(L{r}=0,"",N{r}/L{r}))'
-        lots[f"P{r}"] = f'=IF(A{r}="","",IF(H{r}<=0,"Sold Out","Active"))'
-        lots[f"O{r}"].number_format = "0.0%"
+        lots[f"I{r}"] = f'=IF(A{r}="","",SUMIFS(Expenses!D:D,Expenses!B:B,A{r}))'
+        lots[f"J{r}"] = f'=IF(A{r}="","",SUMIFS(Sales!F:F,Sales!E:E,A{r}))'
+        lots[f"K{r}"] = f'=IF(A{r}="","",F{r}-J{r})'
+        lots[f"L{r}"] = f'=IF(A{r}="","",IF(F{r}=0,"",(E{r}*F{r}+I{r})/F{r}))'
+        lots[f"M{r}"] = f'=IF(A{r}="","",IF(K{r}<=0,"Sold Out","Active"))'
 
     sales = wb["Sales"]
     for r in range(2, MAX_ROW + 1):
-        sales[f"G{r}"] = f'=IF(A{r}="","",E{r}*F{r})'
+        sales[f"I{r}"] = f'=IF(A{r}="","",F{r}*G{r})'
 
     stock = wb["Stock"]
     for r in range(2, MAX_ROW + 1):
         stock[f"A{r}"] = f'=IF(Products!A{r}="","",Products!A{r})'
         stock[f"B{r}"] = f'=IF(A{r}="","",Products!C{r})'
         stock[f"C{r}"] = f'=IF(A{r}="","",SUMIFS(Lots!F:F,Lots!B:B,A{r}))'
-        stock[f"D{r}"] = f'=IF(A{r}="","",SUMIFS(Sales!E:E,Sales!D:D,A{r}))'
+        stock[f"D{r}"] = f'=IF(A{r}="","",SUMIFS(Sales!F:F,Sales!D:D,A{r}))'
         stock[f"E{r}"] = f'=IF(A{r}="","",C{r}-D{r})'
-        stock[f"F{r}"] = f'=IF(A{r}="","",IF(D{r}=0,"",MAXIFS(Sales!B:B,Sales!D:D,A{r})))'
+        stock[f"F{r}"] = f'=IF(A{r}="","",IF(D{r}=0,"",MAXIFS(Sales!C:C,Sales!D:D,A{r})))'
         stock[f"G{r}"] = f'=IF(A{r}="","",IF(F{r}="","",TODAY()-F{r}))'
         stock[f"H{r}"] = (
             f'=IF(A{r}="","",IF(E{r}<=0,"Out of stock",IF(E{r}<=5,"Low stock",'
@@ -141,20 +136,18 @@ def add_readme(wb):
         "Ayyappa Pooja Store - Data Workbook",
         "",
         "Products: product list (names in 6 languages). Add a row for each new product.",
-        "Lots: one row each time stock arrives. Enter Lot ID, Product ID, date, supplier, price and quantity.",
-        "Sales: one row per sale. Enter the Lot ID the items came from. Stock and profit update automatically.",
-        "Expenses: extra costs for a lot (transport, packaging, loading...). Use the same Lot ID.",
-        "Overhead: monthly running costs (rent, electricity, staff...).",
-        "Stock: automatic list of what is left, what is selling, and what has not sold recently. Do not type here.",
+        "Lots: one row per stock arrival. Lot_Expenses_Total and stock columns fill themselves in.",
+        "Expenses: extra costs for a lot (transport, packing...). Use the same Lot_ID as the Lots row.",
+        "Sales: one row per FIFO slice of a sale. The website writes these rows; do not type sales here.",
+        "Overhead: monthly running costs. Month is YYYY-MM.",
+        "Quotes: quotations made on the website. Change Status as they progress.",
+        "Stock: automatic. Do not type here.",
         "",
-        "Lot ID, Sale ID and Expense ID: use L001, S001, E001 ... in order.",
-        "Keep the sheet names and column headings exactly as they are.",
+        "Keep sheet names and column headings exactly as they are.",
         "",
         "ഉൽപ്പന്നങ്ങൾ: ഓരോ പുതിയ ഉൽപ്പന്നത്തിനും ഒരു വരി ചേർക്കുക.",
         "ലോട്ടുകൾ: പുതിയ സ്റ്റോക്ക് വരുമ്പോൾ ഒരു വരി ചേർക്കുക.",
-        "വിൽപ്പന: ഓരോ വിൽപ്പനയ്ക്കും ഒരു വരി. ഏത് ലോട്ടിൽ നിന്നാണെന്ന് Lot ID എഴുതുക.",
-        "ചെലവുകൾ: ലോട്ടിനുള്ള അധിക ചെലവുകൾ (ഗതാഗതം, പാക്കിംഗ്...). അതേ Lot ID ഉപയോഗിക്കുക.",
-        "ഓവർഹെഡ്: മാസ ചെലവുകൾ (വാടക, വൈദ്യുതി, ശമ്പളം...).",
+        "ചെലവുകൾ: ലോട്ടിനുള്ള അധിക ചെലവുകൾ. അതേ Lot_ID ഉപയോഗിക്കുക.",
         "സ്റ്റോക്ക്: ബാക്കിയുള്ളവയുടെ പട്ടിക. ഇതിൽ ഒന്നും ടൈപ്പ് ചെയ്യേണ്ടതില്ല.",
     ]
     for i, text in enumerate(lines, start=1):
@@ -168,8 +161,7 @@ def main():
     wb.remove(wb.active)
 
     for name, (headers, widths) in SCHEMAS.items():
-        ws = wb.create_sheet(name)
-        style_header(ws, headers, widths)
+        style_header(wb.create_sheet(name), headers, widths)
 
     prod = wb["Products"]
     for r, row in enumerate(PRODUCTS, start=2):
