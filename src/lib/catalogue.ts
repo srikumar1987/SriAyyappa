@@ -1,8 +1,9 @@
-import { products as builtIn, categoryFromText, type Category, type Product } from '@/data/products';
-import { aliases } from '@/data/aliases';
+import { products as builtIn, categoryFromText, type Product } from '@/data/products';
 import { readStore, type ProductRecord } from '@/data/repo';
+import { isUnit } from '@/data/units';
 import { locales, type Locale } from '@/i18n';
-import type { SearchableProduct } from '@/domain/search';
+
+export { toSearchable } from './searchIndex';
 
 export function recordToProduct(r: ProductRecord): Product {
   const en = r.names.en ?? r.names.ml ?? r.productId;
@@ -12,6 +13,8 @@ export function recordToProduct(r: ProductRecord): Product {
     name,
     category: categoryFromText(r.category) ?? 'pooja',
     price: r.price,
+    mrp: r.mrp,
+    unit: isUnit(r.unit) ? r.unit : 'piece',
     image: r.imageUrl || '/images/placeholder.svg',
   };
 }
@@ -26,14 +29,4 @@ export async function getProducts(): Promise<Product[]> {
 
 export function findIn(list: Product[], id: string): Product | undefined {
   return list.find((p) => p.id === id);
-}
-
-export function toSearchable(list: Product[]): SearchableProduct[] {
-  return list.map((p) => ({
-    id: p.id,
-    category: p.category as Category,
-    price: p.price,
-    names: locales.map((l) => p.name[l]),
-    aliases: aliases[p.id] ?? [],
-  }));
 }

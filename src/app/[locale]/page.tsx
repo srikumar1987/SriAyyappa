@@ -4,6 +4,8 @@ import ProductGrid from '@/components/ProductGrid';
 import { Link } from '@/navigation';
 import { getProducts } from '@/lib/catalogue';
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   const t = await getTranslations('common');
   const products = await getProducts();

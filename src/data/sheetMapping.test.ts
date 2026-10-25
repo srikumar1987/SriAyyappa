@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { StoreData } from './repo';
 import { rowsToAppend, storeFromValues, type SheetValues } from './sheetMapping';
 
-const empty: StoreData = { lots: [], sales: [], overhead: [], quotes: [] };
+const empty: StoreData = { lots: [], sales: [], overhead: [], quotes: [], products: [] };
 
 const after: StoreData = {
   lots: [
@@ -46,6 +46,7 @@ const after: StoreData = {
       status: 'draft',
     },
   ],
+  products: [],
 };
 
 describe('sheet rows', () => {
@@ -81,6 +82,7 @@ describe('sheet rows', () => {
       expenses: [],
       overhead: [],
       quotes: [],
+      products: [],
     });
     expect(store.lots[0]).toMatchObject({ buyPriceUnit: 0, qtyReceived: 0, lotExpensesTotal: 0 });
   });

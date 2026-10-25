@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import { t } from '@/admin/messages';
 import { categoryKeys, type Category } from '@/data/products';
+import { allowsDecimal, unitName, unitShort, UNITS, type Unit } from '@/data/units';
 
 const MAX_SIDE = 1000;
 const inputClass = 'mt-2 w-full text-lg border-2 border-saffron rounded-xl p-3 bg-white';
@@ -26,6 +27,7 @@ async function enhancePhoto(file: File): Promise<string> {
 export default function ProductForm({ locale }: { locale: string }) {
   const common = useTranslations('common');
   const [photo, setPhoto] = useState<string | null>(null);
+  const [unit, setUnit] = useState<Unit>('piece');
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -49,8 +51,12 @@ export default function ProductForm({ locale }: { locale: string }) {
         hi: f.get('name_hi'),
       },
       category: f.get('category'),
+      unit,
+      mrp: f.get('mrp'),
       price: f.get('price'),
-      mrp: f.get('mrp') || 0,
+      buyPrice: f.get('buyPrice'),
+      openingQty: f.get('openingQty') || 0,
+      supplier: f.get('supplier'),
       manufacturer: f.get('manufacturer'),
       description: f.get('description'),
       ...(photo ? { imageDataUrl: photo } : {}),
@@ -107,16 +113,52 @@ export default function ProductForm({ locale }: { locale: string }) {
         </select>
       </label>
 
-      <div className="grid grid-cols-2 gap-4">
-        <label className="block text-lg font-medium">
-          {t(locale, 'productPrice')}
-          <input name="price" type="number" inputMode="decimal" min={0} step="0.01" required className={inputClass} />
+      <label className="block text-lg font-medium">
+        {t(locale, 'productUnit')}
+        <select
+          name="unit"
+          value={unit}
+          onChange={(e) => setUnit(e.target.value as Unit)}
+          className={inputClass}
+        >
+          {UNITS.map((u) => (
+            <option key={u} value={u}>
+              {locale === 'ml' ? unitName[u].ml : unitName[u].en}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <div className="grid gap-4 rounded-2xl bg-cream p-4 sm:grid-cols-2">
+        <label className="block text-lg font-semibold text-deep-red">
+          {t(locale, 'productMrp')} · {unitShort[unit]}
+          <input name="mrp" type="number" inputMode="decimal" min={0.01} step="0.01" required className={inputClass} />
         </label>
         <label className="block text-lg font-medium">
-          {t(locale, 'productMrp')}
-          <input name="mrp" type="number" inputMode="decimal" min={0} step="0.01" className={inputClass} />
+          {t(locale, 'productPrice')} · {unitShort[unit]}
+          <input name="price" type="number" inputMode="decimal" min={0} step="0.01" placeholder={t(locale, 'productPriceHint')} className={inputClass} />
+        </label>
+        <label className="block text-lg font-medium">
+          {t(locale, 'productBuyPrice')} · {unitShort[unit]}
+          <input name="buyPrice" type="number" inputMode="decimal" min={0} step="0.01" className={inputClass} />
+        </label>
+        <label className="block text-lg font-medium">
+          {t(locale, 'productOpeningQty')} ({unitShort[unit]})
+          <input
+            name="openingQty"
+            type="number"
+            inputMode="decimal"
+            min={0}
+            step={allowsDecimal(unit) ? '0.001' : '1'}
+            className={inputClass}
+          />
         </label>
       </div>
+
+      <label className="block text-lg font-medium">
+        {t(locale, 'productSupplier')}
+        <input name="supplier" maxLength={80} className={inputClass} />
+      </label>
 
       <label className="block text-lg font-medium">
         {t(locale, 'productManufacturer')}

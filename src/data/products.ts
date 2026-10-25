@@ -1,4 +1,5 @@
 import type { Locale } from '@/i18n';
+import type { Unit } from './units';
 
 export type Category =
   | 'pooja'
@@ -41,9 +42,14 @@ export interface Product {
   id: string;
   name: Record<Locale, string>;
   category: Category;
-  price: number;
+  price: number; // our selling price, per unit
   image: string;
+  mrp?: number; // printed price; defaults to price
+  unit?: Unit; // defaults to 'piece'
 }
+
+export const mrpOf = (p: Product): number => (p.mrp && p.mrp > 0 ? p.mrp : p.price);
+export const unitOf = (p: Product): Unit => p.unit ?? 'piece';
 
 // Placeholder data until Google Sheets is connected.
 export const products: Product[] = [

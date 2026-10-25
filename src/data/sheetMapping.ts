@@ -13,7 +13,7 @@ export const TABS = {
 } as const;
 
 export const READ_RANGES = {
-  products: 'A2:N',
+  products: 'A2:O',
   lots: 'A2:M',
   sales: 'A2:L',
   expenses: 'A2:F',
@@ -22,7 +22,7 @@ export const READ_RANGES = {
 } as const;
 
 export const APPEND_RANGES = {
-  products: 'A:N',
+  products: 'A:O',
   lots: 'A:H',
   sales: 'A:K',
   expenses: 'A:F',
@@ -109,6 +109,7 @@ export function storeFromValues(v: SheetValues): StoreData {
       manufacturer: r[11] ?? '',
       description: r[12] ?? '',
       imageUrl: r[13] ?? '',
+      unit: r[14] || 'piece',
     }))
     .map((p) => ({ ...p, names: Object.fromEntries(Object.entries(p.names).filter(([, v]) => v)) }));
 
@@ -143,6 +144,7 @@ export function rowsToAppend(before: StoreData, after: StoreData, makeId: (prefi
       p.manufacturer,
       p.description,
       p.imageUrl,
+      p.unit,
     ]),
     lots: newLots.map((l) => [
       l.lotId,

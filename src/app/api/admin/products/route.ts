@@ -3,12 +3,14 @@ import { z } from 'zod';
 import { newId, updateStore } from '@/data/repo';
 import { saveProductImage } from '@/data/imageStore';
 import { categoryLabel, type Category } from '@/data/products';
+import { allowsDecimal, UNITS } from '@/data/units';
 import { isAdminSession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 const optionalName = z.string().trim().max(120).default('');
 const CATEGORY_KEYS = Object.keys(categoryLabel) as [Category, ...Category[]];
+const money = z.coerce.number().nonnegative().max(1000000);
 
 const productSchema = z.object({
   names: z.object({
@@ -20,8 +22,12 @@ const productSchema = z.object({
     hi: optionalName,
   }),
   category: z.enum(CATEGORY_KEYS),
-  price: z.coerce.number().nonnegative().max(1000000),
-  mrp: z.coerce.number().nonnegative().max(1000000).default(0),
+  unit: z.enum(UNITS),
+  mrp: z.coerce.number().positive().max(1000000),
+  price: money.optional(), // our selling price; defaults to MRP
+  buyPrice: money.optional(),
+  openingQty: z.coerce.number().nonnegative().max(100000).default(0),
+  supplier: z.string().trim().max(80).default(''),
   manufacturer: z.string().trim().max(80).default(''),
   description: z.string().trim().max(500).default(''),
   imageDataUrl: z
@@ -36,7 +42,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, messageKey: 'notSignedIn' }, { status: 401 });
   }
 
-  const parsed = productSchema.safeParse(await req.json().catch(() => null));
+  const raw = await req.json().catch(() => null);
+  // Empty optional number fields arrive as "" from the form; treat them as not given.
+  for (const k of ['price', 'buyPrice']) if (raw && raw[k] === '') delete raw[k];
+
+  const parsed = productSchema.safeParse(raw);
   if (!parsed.success) {
     return NextResponse.json({ ok: false, messageKey: 'invalidInput' }, { status: 400 });
   }
@@ -45,23 +55,46 @@ export async function POST(req: Request) {
   if (!names.en && !names.ml) {
     return NextResponse.json({ ok: false, messageKey: 'nameRequired' }, { status: 400 });
   }
+  if (!allowsDecimal(d.unit) && !Number.isInteger(d.openingQty)) {
+    return NextResponse.json({ ok: false, messageKey: 'wholeNumberQty' }, { status: 400 });
+  }
+  if (d.openingQty > 0 && d.buyPrice === undefined) {
+    return NextResponse.json({ ok: false, messageKey: 'buyPriceRequired' }, { status: 400 });
+  }
 
+  const price = d.price ?? d.mrp;
   const productId = newId('P');
   const imageUrl = d.imageDataUrl
     ? await saveProductImage(productId, Buffer.from(d.imageDataUrl.split(',')[1], 'base64'))
     : '';
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
 
   await updateStore((data) => {
     data.products.push({
       productId,
       category: d.category,
-      price: d.price,
+      price,
       mrp: d.mrp,
+      unit: d.unit,
       manufacturer: d.manufacturer,
       description: d.description,
       names,
       imageUrl,
     });
+    // Opening stock becomes the first lot, so stock, cost and profit work from day one.
+    if (d.openingQty > 0 && d.buyPrice !== undefined) {
+      data.lots.push({
+        lotId: newId('L'),
+        productId,
+        receivedOn: today,
+        supplier: d.supplier || 'Opening stock',
+        qtyReceived: d.openingQty,
+        buyPriceUnit: d.buyPrice,
+        sellingPriceUnit: price,
+        lotExpensesTotal: 0,
+        expenseNote: '',
+      });
+    }
   });
 
   return NextResponse.json({ ok: true, messageKey: 'productSaved', vars: { id: productId } });

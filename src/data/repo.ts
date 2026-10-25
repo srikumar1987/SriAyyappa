@@ -58,6 +58,7 @@ export interface ProductRecord {
   category: string; // a Category key, e.g. 'kerala-snacks'
   price: number;
   mrp: number;
+  unit: string; // a Unit, e.g. 'kg'
   manufacturer: string;
   description: string;
   names: Partial<Record<'en' | 'hi' | 'kn' | 'ml' | 'te' | 'ta', string>>;

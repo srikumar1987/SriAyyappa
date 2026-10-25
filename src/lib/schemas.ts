@@ -8,7 +8,7 @@ export const lotSchema = z.object({
   productId: z.string().min(1).max(20),
   supplier: z.string().trim().min(1).max(80),
   receivedOn: isoDate,
-  qtyReceived: z.coerce.number().int().positive().max(100000),
+  qtyReceived: z.coerce.number().positive().max(100000), // decimals allowed for kg / litre
   buyPriceUnit: z.coerce.number().nonnegative().max(1000000),
   sellingPriceUnit: z.coerce.number().nonnegative().max(1000000),
   lotExpensesTotal: z.coerce.number().nonnegative().max(10000000).default(0),
@@ -17,7 +17,7 @@ export const lotSchema = z.object({
 
 export const saleSchema = z.object({
   productId: z.string().min(1).max(20),
-  qty: z.coerce.number().int().positive().max(100000),
+  qty: z.coerce.number().positive().max(100000), // decimals allowed for kg / litre
   unitPrice: z.coerce.number().nonnegative().max(1000000),
   payment: z.enum(PAYMENTS),
   customerName: z.string().trim().max(80).default(''),

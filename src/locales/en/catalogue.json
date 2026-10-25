@@ -1,0 +1,18 @@
+{
+  "heroTitle": "Our Catalogue",
+  "heroText": "Sacred pooja items and Kerala favourites — search in your own language",
+  "mrp": "MRP",
+  "ourPrice": "Our price",
+  "youSave": "You save ₹{amount}",
+  "searchHint": "Search in any language — e.g. vilakku, दीया, വിളക്ക്, விளக்கு",
+  "results": "{count} items",
+  "sortBy": "Sort",
+  "sortRelevance": "Best match",
+  "sortMrpLow": "MRP: low to high",
+  "sortMrpHigh": "MRP: high to low",
+  "sortName": "Name",
+  "all": "All",
+  "clear": "Clear",
+  "noMatch": "Nothing matched “{q}”. Try a shorter word or another language.",
+  "popular": "You may like"
+}

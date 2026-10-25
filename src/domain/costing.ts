@@ -5,8 +5,8 @@ export function round2(value: number): number {
 
 /** Cost per unit including the lot's transport, packaging and other expenses. */
 export function landedCostUnit(buyPriceUnit: number, qtyReceived: number, lotExpensesTotal: number): number {
-  if (!Number.isInteger(qtyReceived) || qtyReceived <= 0) {
-    throw new RangeError('Quantity received must be a positive whole number');
+  if (!Number.isFinite(qtyReceived) || qtyReceived <= 0) {
+    throw new RangeError('Quantity received must be a positive number');
   }
   return round2((buyPriceUnit * qtyReceived + lotExpensesTotal) / qtyReceived);
 }

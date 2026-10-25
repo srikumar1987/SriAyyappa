@@ -1,4 +1,6 @@
 import { getProducts } from '@/lib/catalogue';
+import { mrpOf, unitOf } from '@/data/products';
+import { unitShort } from '@/data/units';
 import { readStore } from '@/data/repo';
 import { stockRows } from '@/domain/stockView';
 import type { StockStatus } from '@/domain/stock';
@@ -22,6 +24,12 @@ export default async function StockPage({ params }: { params: { locale: string }
   const data = await readStore();
   const rows = stockRows(products.map((p) => p.id), data.lots, data.sales, new Date());
 
+  // Buying price of the most recent lot for each product.
+  const latestBuy: Record<string, number> = {};
+  for (const lot of [...data.lots].sort((a, b) => a.receivedOn.localeCompare(b.receivedOn))) {
+    latestBuy[lot.productId] = lot.buyPriceUnit;
+  }
+
   const sorted = products
     .map((p) => ({ product: p, row: rows[p.id] }))
     .sort((a, b) => ORDER[a.row.status] - ORDER[b.row.status] || a.row.remaining - b.row.remaining);
@@ -35,7 +43,18 @@ export default async function StockPage({ params }: { params: { locale: string }
             <div>
               <p className="text-xl font-medium">{productName(product, locale)}</p>
               <p className="text-base text-dark-brown">
-                {t(locale, 'remaining')}: <strong>{row.remaining}</strong>
+                {t(locale, 'remaining')}:{' '}
+                <strong>
+                  {Math.round(row.remaining * 1000) / 1000} {unitShort[unitOf(product)]}
+                </strong>
+                {' · '}
+                {t(locale, 'mrpLabel')} ₹{mrpOf(product)}
+                {latestBuy[product.id] !== undefined && (
+                  <>
+                    {' · '}
+                    {t(locale, 'buyPriceLabel')} ₹{latestBuy[product.id]}
+                  </>
+                )}
                 {' · '}
                 {t(locale, 'lastSale')}:{' '}
                 {row.lastSoldAt

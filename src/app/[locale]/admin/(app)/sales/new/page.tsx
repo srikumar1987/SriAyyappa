@@ -48,7 +48,7 @@ export default async function NewSalePage({ params }: { params: { locale: string
         </Field>
 
         <Field label={t(locale, 'qty')}>
-          <input name="qty" type="number" inputMode="numeric" min={1} step={1} required className={inputClass} />
+          <input name="qty" type="number" inputMode="decimal" min={0.001} step="0.001" required className={inputClass} />
         </Field>
 
         <Field label={t(locale, 'unitPrice')}>

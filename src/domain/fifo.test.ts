@@ -50,10 +50,23 @@ describe('allocateFifo', () => {
     }
   });
 
-  it('rejects zero, negative and fractional quantities', () => {
+  it('rejects zero and negative quantities', () => {
     expect(() => allocateFifo([lotA], 0)).toThrow(RangeError);
     expect(() => allocateFifo([lotA], -2)).toThrow(RangeError);
-    expect(() => allocateFifo([lotA], 1.5)).toThrow(RangeError);
+  });
+
+  it('handles part quantities for items sold by weight or volume', () => {
+    const kg1 = { lotId: 'K1', receivedOn: '2026-01-01', remaining: 1.5, unitCost: 80 };
+    const kg2 = { lotId: 'K2', receivedOn: '2026-02-01', remaining: 2, unitCost: 90 };
+    expect(allocateFifo([kg1, kg2], 2.25)).toEqual([
+      { lotId: 'K1', qty: 1.5, unitCost: 80 },
+      { lotId: 'K2', qty: 0.75, unitCost: 90 },
+    ]);
+  });
+
+  it('does not drift with decimal arithmetic', () => {
+    const lot = { lotId: 'L', receivedOn: '2026-01-01', remaining: 0.3, unitCost: 10 };
+    expect(allocateFifo([lot], 0.1 + 0.2)).toEqual([{ lotId: 'L', qty: 0.3, unitCost: 10 }]);
   });
 
   it('rejects any sale when there is no stock at all', () => {
