@@ -1,8 +1,10 @@
-import type { LotRecord, OverheadRecord, QuoteRecord, SaleRecord, StoreData } from './repo';
+import type { LotRecord, OverheadRecord, ProductRecord, QuoteRecord, SaleRecord, StoreData } from './repo';
+import { categoryFromText, categoryLabel, type Category } from './products';
 
 // Column layout of the Google Sheet. Must match scripts/make_sheet_template.py.
 // Only the value columns are written; formula columns (Lot totals, Qty_Sold, Total...) are left to the sheet.
 export const TABS = {
+  products: 'Products',
   lots: 'Lots',
   sales: 'Sales',
   expenses: 'Expenses',
@@ -11,6 +13,7 @@ export const TABS = {
 } as const;
 
 export const READ_RANGES = {
+  products: 'A2:N',
   lots: 'A2:M',
   sales: 'A2:L',
   expenses: 'A2:F',
@@ -19,6 +22,7 @@ export const READ_RANGES = {
 } as const;
 
 export const APPEND_RANGES = {
+  products: 'A:N',
   lots: 'A:H',
   sales: 'A:K',
   expenses: 'A:F',
@@ -28,6 +32,7 @@ export const APPEND_RANGES = {
 
 export type Rows = string[][];
 export interface SheetValues {
+  products: Rows;
   lots: Rows;
   sales: Rows;
   expenses: Rows;
@@ -93,7 +98,21 @@ export function storeFromValues(v: SheetValues): StoreData {
       items: JSON.parse(r[7] || '[]'),
     }));
 
-  return { lots, sales, overhead, quotes };
+  const products: ProductRecord[] = v.products
+    .filter((r) => r[0])
+    .map((r) => ({
+      productId: r[0],
+      names: { ml: r[1], en: r[2], ta: r[3], kn: r[4], te: r[5], hi: r[6] },
+      category: categoryFromText(r[7] ?? '') ?? 'pooja',
+      price: num(r[8]),
+      mrp: num(r[10]),
+      manufacturer: r[11] ?? '',
+      description: r[12] ?? '',
+      imageUrl: r[13] ?? '',
+    }))
+    .map((p) => ({ ...p, names: Object.fromEntries(Object.entries(p.names).filter(([, v]) => v)) }));
+
+  return { lots, sales, overhead, quotes, products };
 }
 
 /**
@@ -106,7 +125,25 @@ export function rowsToAppend(before: StoreData, after: StoreData, makeId: (prefi
   const newOverhead = after.overhead.slice(before.overhead.length);
   const newQuotes = after.quotes.slice(before.quotes.length);
 
+  const newProducts = after.products.slice(before.products.length);
+
   return {
+    products: newProducts.map((p) => [
+      p.productId,
+      p.names.ml ?? '',
+      p.names.en ?? '',
+      p.names.ta ?? '',
+      p.names.kn ?? '',
+      p.names.te ?? '',
+      p.names.hi ?? '',
+      categoryLabel[p.category as Category] ?? p.category,
+      String(p.price),
+      '',
+      String(p.mrp),
+      p.manufacturer,
+      p.description,
+      p.imageUrl,
+    ]),
     lots: newLots.map((l) => [
       l.lotId,
       l.productId,

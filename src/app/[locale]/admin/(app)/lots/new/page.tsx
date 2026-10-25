@@ -1,5 +1,5 @@
 import AdminForm from '@/components/admin/AdminForm';
-import { products } from '@/data/products';
+import { getProducts } from '@/lib/catalogue';
 import { t } from '@/admin/messages';
 import { productName } from '@/lib/productName';
 import { safeLocale } from '@/lib/paths';
@@ -17,8 +17,9 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-export default function NewLotPage({ params }: { params: { locale: string } }) {
+export default async function NewLotPage({ params }: { params: { locale: string } }) {
   const locale = safeLocale(params.locale);
+  const products = await getProducts();
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
 
   return (

@@ -53,15 +53,27 @@ export interface QuoteRecord {
   status: 'draft' | 'sent' | 'accepted' | 'expired';
 }
 
+export interface ProductRecord {
+  productId: string;
+  category: string; // a Category key, e.g. 'kerala-snacks'
+  price: number;
+  mrp: number;
+  manufacturer: string;
+  description: string;
+  names: Partial<Record<'en' | 'hi' | 'kn' | 'ml' | 'te' | 'ta', string>>;
+  imageUrl: string;
+}
+
 export interface StoreData {
   lots: LotRecord[];
   sales: SaleRecord[];
   overhead: OverheadRecord[];
   quotes: QuoteRecord[];
+  products: ProductRecord[]; // products added by the admin, on top of the built-in list
 }
 
 const FILE = path.join(process.cwd(), '.local', 'store.json');
-const emptyStore = (): StoreData => ({ lots: [], sales: [], overhead: [], quotes: [] });
+const emptyStore = (): StoreData => ({ lots: [], sales: [], overhead: [], quotes: [], products: [] });
 
 async function readLocalStore(): Promise<StoreData> {
   try {

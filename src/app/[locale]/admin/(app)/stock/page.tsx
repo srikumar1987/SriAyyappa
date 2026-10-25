@@ -1,4 +1,4 @@
-import { products } from '@/data/products';
+import { getProducts } from '@/lib/catalogue';
 import { readStore } from '@/data/repo';
 import { stockRows } from '@/domain/stockView';
 import type { StockStatus } from '@/domain/stock';
@@ -18,6 +18,7 @@ const BADGE: Record<StockStatus, string> = {
 
 export default async function StockPage({ params }: { params: { locale: string } }) {
   const locale = safeLocale(params.locale);
+  const products = await getProducts();
   const data = await readStore();
   const rows = stockRows(products.map((p) => p.id), data.lots, data.sales, new Date());
 

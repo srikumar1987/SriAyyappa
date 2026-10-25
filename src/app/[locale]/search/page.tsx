@@ -4,7 +4,7 @@ import ProductCard from '@/components/ProductCard';
 import SearchBox from '@/components/SearchBox';
 import type { Product } from '@/data/products';
 import { relatedProducts, searchProducts } from '@/domain/search';
-import { findProduct, toSearchable } from '@/lib/catalogue';
+import { findIn, getProducts, toSearchable } from '@/lib/catalogue';
 import { safeLocale } from '@/lib/paths';
 
 export const dynamic = 'force-dynamic';
@@ -20,16 +20,17 @@ export default async function SearchPage({
   const t = await getTranslations('shop');
   const query = (searchParams.q ?? '').slice(0, 100);
 
-  const index = toSearchable();
+  const all = await getProducts();
+  const index = toSearchable(all);
   const matches = searchProducts(query, index)
-    .map((r) => findProduct(r.id))
+    .map((r) => findIn(all, r.id))
     .filter((p): p is Product => Boolean(p));
 
   const first = matches[0];
   const related = first
     ? relatedProducts(index.find((i) => i.id === first.id)!, index, 8)
         .filter((r) => !matches.some((m) => m.id === r.id))
-        .map((r) => findProduct(r.id))
+        .map((r) => findIn(all, r.id))
         .filter((p): p is Product => Boolean(p))
         .slice(0, 4)
     : [];

@@ -15,7 +15,7 @@ export default function AdminHomePage({ params }: { params: { locale: string } }
     { href: '/admin/reports', label: t(locale, 'reports'), enabled: true },
     { href: '/admin/quotes', label: t(locale, 'quotesTitle'), enabled: true },
     { href: '/admin/overhead', label: t(locale, 'overheadTitle'), enabled: true },
-    { href: '/admin/products/new', label: t(locale, 'addProduct'), enabled: false },
+    { href: '/admin/products/new', label: t(locale, 'addProduct'), enabled: true },
   ];
 
   return (

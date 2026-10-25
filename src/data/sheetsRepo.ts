@@ -6,7 +6,18 @@ import { APPEND_RANGES, READ_RANGES, TABS, rowsToAppend, storeFromValues, type S
 // Credentials: GOOGLE_SERVICE_ACCOUNT_EMAIL + GOOGLE_PRIVATE_KEY (hosting), or GOOGLE_APPLICATION_CREDENTIALS
 // pointing at the JSON key file (local development only).
 
-const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
+// drive.file: only files this app creates (the product photos). The sheet is covered by spreadsheets.
+const SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive.file'];
+
+export function driveClient() {
+  const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  const key = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+  const auth = new google.auth.GoogleAuth({
+    scopes: SCOPES,
+    credentials: email && key ? { client_email: email, private_key: key } : undefined,
+  });
+  return google.drive({ version: 'v3', auth });
+}
 
 function sheetsClient(): sheets_v4.Sheets {
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
@@ -28,6 +39,7 @@ async function readValues(sheets: sheets_v4.Sheets): Promise<SheetValues> {
   const res = await sheets.spreadsheets.values.batchGet({
     spreadsheetId: spreadsheetId(),
     ranges: [
+      `${TABS.products}!${READ_RANGES.products}`,
       `${TABS.lots}!${READ_RANGES.lots}`,
       `${TABS.sales}!${READ_RANGES.sales}`,
       `${TABS.expenses}!${READ_RANGES.expenses}`,
@@ -35,10 +47,10 @@ async function readValues(sheets: sheets_v4.Sheets): Promise<SheetValues> {
       `${TABS.quotes}!${READ_RANGES.quotes}`,
     ],
   });
-  const [lots, sales, expenses, overhead, quotes] = (res.data.valueRanges ?? []).map(
+  const [products, lots, sales, expenses, overhead, quotes] = (res.data.valueRanges ?? []).map(
     (r) => (r.values ?? []) as string[][]
   );
-  return { lots, sales, expenses, overhead, quotes };
+  return { products, lots, sales, expenses, overhead, quotes };
 }
 
 export async function readSheetStore(): Promise<StoreData> {

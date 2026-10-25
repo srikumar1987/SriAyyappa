@@ -1,12 +1,13 @@
 import { getTranslations } from 'next-intl/server';
 import Header from '@/components/Header';
 import QuoteBasket from '@/components/QuoteBasket';
-import { products } from '@/data/products';
+import { getProducts } from '@/lib/catalogue';
 
 export const dynamic = 'force-dynamic';
 
 export default async function QuotePage() {
   const t = await getTranslations('shop');
+  const products = await getProducts();
 
   return (
     <div className="min-h-screen">

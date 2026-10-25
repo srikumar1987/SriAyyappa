@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { newId, updateStore, type QuoteItem } from '@/data/repo';
 import { round2 } from '@/domain/costing';
-import { findProduct } from '@/lib/catalogue';
+import { findIn, getProducts } from '@/lib/catalogue';
 import { locales } from '@/i18n';
 
 export const dynamic = 'force-dynamic';
@@ -29,9 +29,10 @@ export async function POST(req: Request) {
   }
 
   // Merge repeated products and take every price from the catalogue, never from the browser.
+  const all = await getProducts();
   const merged = new Map<string, number>();
   for (const item of parsed.data.items) {
-    if (!findProduct(item.productId)) {
+    if (!findIn(all, item.productId)) {
       return NextResponse.json({ ok: false, messageKey: 'invalidInput' }, { status: 400 });
     }
     merged.set(item.productId, Math.min(1000, (merged.get(item.productId) ?? 0) + item.qty));
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
   const items: QuoteItem[] = [...merged].map(([productId, qty]) => ({
     productId,
     qty,
-    unitPrice: findProduct(productId)!.price,
+    unitPrice: findIn(all, productId)!.price,
   }));
   const total = round2(items.reduce((sum, i) => sum + i.qty * i.unitPrice, 0));
   const quoteId = newId('Q');

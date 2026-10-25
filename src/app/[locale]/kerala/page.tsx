@@ -1,10 +1,12 @@
 import { getTranslations } from 'next-intl/server';
 import Header from '@/components/Header';
 import ProductGrid from '@/components/ProductGrid';
-import { products, keralaCategories } from '@/data/products';
+import { keralaCategories } from '@/data/products';
+import { getProducts } from '@/lib/catalogue';
 
 export default async function KeralaPage() {
   const t = await getTranslations('common');
+  const products = await getProducts();
   const keralaProducts = products.filter((p) => keralaCategories.includes(p.category));
 
   return (

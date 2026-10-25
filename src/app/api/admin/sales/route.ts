@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { products } from '@/data/products';
+import { getProducts } from '@/lib/catalogue';
 import { newId, updateStore } from '@/data/repo';
 import { allocateFifo, InsufficientStockError } from '@/domain/fifo';
 import { lotStocks } from '@/domain/stockView';
@@ -14,7 +14,8 @@ export async function POST(req: Request) {
   }
 
   const parsed = saleSchema.safeParse(await req.json().catch(() => null));
-  if (!parsed.success || !products.some((p) => p.id === parsed.data.productId)) {
+  const known = parsed.success && (await getProducts()).some((p) => p.id === parsed.data.productId);
+  if (!parsed.success || !known) {
     return NextResponse.json({ ok: false, messageKey: 'invalidInput' }, { status: 400 });
   }
 

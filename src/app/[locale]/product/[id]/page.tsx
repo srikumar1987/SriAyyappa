@@ -6,7 +6,7 @@ import ProductActions from '@/components/ProductActions';
 import ProductCard from '@/components/ProductCard';
 import { locales, localeNames, type Locale } from '@/i18n';
 import { relatedProducts } from '@/domain/search';
-import { findProduct, toSearchable } from '@/lib/catalogue';
+import { findIn, getProducts, toSearchable } from '@/lib/catalogue';
 import { productName } from '@/lib/productName';
 import { safeLocale } from '@/lib/paths';
 
@@ -14,13 +14,14 @@ export const dynamic = 'force-dynamic';
 
 export default async function ProductPage({ params }: { params: { locale: string; id: string } }) {
   const locale = safeLocale(params.locale);
-  const product = findProduct(params.id);
+  const all = await getProducts();
+  const product = findIn(all, params.id);
   if (!product) notFound();
 
   const t = await getTranslations('shop');
-  const index = toSearchable();
+  const index = toSearchable(all);
   const related = relatedProducts(index.find((i) => i.id === product.id)!, index, 4)
-    .map((r) => findProduct(r.id))
+    .map((r) => findIn(all, r.id))
     .filter((p): p is Product => Boolean(p));
 
   return (

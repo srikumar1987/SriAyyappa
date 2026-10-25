@@ -42,8 +42,9 @@ PRODUCTS = [
 SCHEMAS = {
     "Products": (
         ["Product_ID", "Name_Malayalam", "Name_English", "Name_Tamil", "Name_Kannada",
-         "Name_Telugu", "Name_Hindi", "Category", "Default_Selling_Price", "Image_Folder"],
-        [12, 26, 24, 26, 26, 26, 24, 18, 20, 20],
+         "Name_Telugu", "Name_Hindi", "Category", "Default_Selling_Price", "Image_Folder",
+         "MRP", "Manufacturer", "Description_English", "Image_URL"],
+        [12, 26, 24, 26, 26, 26, 24, 18, 20, 20, 12, 22, 36, 40],
     ),
     "Lots": (
         ["Lot_ID", "Product_ID", "Received_On", "Supplier", "Buy_Price_Unit", "Qty_Received",

@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import PrintButton from '@/components/PrintButton';
 import { readStore } from '@/data/repo';
-import { findProduct } from '@/lib/catalogue';
+import { findIn, getProducts } from '@/lib/catalogue';
 import { productName } from '@/lib/productName';
 import { safeLocale } from '@/lib/paths';
 import { localeNames, type Locale } from '@/i18n';
@@ -18,6 +18,7 @@ export default async function PrintableQuotePage({ params }: { params: { locale:
   const t = await getTranslations('shop');
   const common = await getTranslations('common');
   const lang = safeLocale(quote.language);
+  const all = await getProducts();
   const date = new Date(quote.createdAt).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' });
 
   return (
@@ -45,7 +46,7 @@ export default async function PrintableQuotePage({ params }: { params: { locale:
           </thead>
           <tbody>
             {quote.items.map((item, i) => {
-              const product = findProduct(item.productId);
+              const product = findIn(all, item.productId);
               return (
                 <tr key={item.productId} className="border-b">
                   <td className="py-2">{i + 1}</td>

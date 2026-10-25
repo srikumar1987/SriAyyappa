@@ -1,10 +1,11 @@
 import { getTranslations } from 'next-intl/server';
 import Header from '@/components/Header';
 import ProductGrid from '@/components/ProductGrid';
-import { products } from '@/data/products';
+import { getProducts } from '@/lib/catalogue';
 
 export default async function CataloguePage() {
   const t = await getTranslations('common');
+  const products = await getProducts();
 
   return (
     <div className="min-h-screen">

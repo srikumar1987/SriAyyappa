@@ -19,6 +19,24 @@ export const categoryKeys: Record<Category, string> = {
 
 export const keralaCategories: Category[] = ['kerala-snacks', 'kerala-sweets', 'kerala-products'];
 
+// Labels used in the Google Sheet's Category dropdown.
+export const categoryLabel: Record<Category, string> = {
+  pooja: 'Pooja Items',
+  idols: 'Idols',
+  incense: 'Incense',
+  'kerala-snacks': 'Kerala Snacks',
+  'kerala-sweets': 'Kerala Sweets',
+  'kerala-products': 'Kerala Products',
+};
+
+/** Accepts either the sheet label ("Kerala Snacks") or the code key ("kerala-snacks"). */
+export function categoryFromText(text: string): Category | undefined {
+  const t = text.trim().toLowerCase();
+  return (Object.keys(categoryLabel) as Category[]).find(
+    (c) => c === t || categoryLabel[c].toLowerCase() === t
+  );
+}
+
 export interface Product {
   id: string;
   name: Record<Locale, string>;

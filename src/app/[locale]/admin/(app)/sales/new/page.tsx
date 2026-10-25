@@ -1,5 +1,5 @@
 import AdminForm from '@/components/admin/AdminForm';
-import { products } from '@/data/products';
+import { getProducts } from '@/lib/catalogue';
 import { readStore } from '@/data/repo';
 import { stockRows } from '@/domain/stockView';
 import { t } from '@/admin/messages';
@@ -21,6 +21,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 export default async function NewSalePage({ params }: { params: { locale: string } }) {
   const locale = safeLocale(params.locale);
+  const products = await getProducts();
   const data = await readStore();
   const rows = stockRows(
     products.map((p) => p.id),
