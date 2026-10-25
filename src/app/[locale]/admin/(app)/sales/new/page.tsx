@@ -30,7 +30,7 @@ export default async function NewSalePage({ params }: { params: { locale: string
   );
 
   return (
-    <section>
+    <section className="mx-auto max-w-2xl">
       <h1 className="text-3xl font-serif text-deep-red mb-6">{t(locale, 'sale')}</h1>
       <AdminForm endpoint="/api/admin/sales" locale={locale} submitKey="saveSale">
         <Field label={t(locale, 'product')}>

@@ -46,8 +46,8 @@ export default async function ReportsPage({ params }: { params: { locale: string
   const emptyText = t(locale, 'nothing');
 
   return (
-    <section className="space-y-6">
-      <h1 className="text-3xl font-serif text-deep-red">{t(locale, 'reportsTitle')}</h1>
+    <section className="grid gap-6 lg:grid-cols-2">
+      <h1 className="text-3xl font-serif text-deep-red lg:col-span-2">{t(locale, 'reportsTitle')}</h1>
 
       <Section title={t(locale, 'best30')}>
         <p className="font-medium">{t(locale, 'byQty')}</p>

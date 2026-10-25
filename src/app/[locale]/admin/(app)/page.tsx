@@ -25,7 +25,7 @@ export default function AdminHomePage({ params }: { params: { locale: string } }
         <LogoutButton locale={locale} label={t(locale, 'logout')} />
       </div>
 
-      <div className="grid gap-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {tiles.map((tile) =>
           tile.enabled ? (
             <Link

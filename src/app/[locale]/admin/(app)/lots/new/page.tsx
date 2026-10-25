@@ -22,7 +22,7 @@ export default function NewLotPage({ params }: { params: { locale: string } }) {
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
 
   return (
-    <section>
+    <section className="mx-auto max-w-2xl">
       <h1 className="text-3xl font-serif text-deep-red mb-6">{t(locale, 'stockArrived')}</h1>
       <AdminForm endpoint="/api/admin/lots" locale={locale} submitKey="saveLot">
         <Field label={t(locale, 'product')}>

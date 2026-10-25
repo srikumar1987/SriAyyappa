@@ -23,7 +23,7 @@ export default async function OverheadPage({ params }: { params: { locale: strin
   const total = entries.reduce((n, o) => n + o.amount, 0);
 
   return (
-    <section className="space-y-6">
+    <section className="mx-auto max-w-2xl space-y-6">
       <h1 className="text-3xl font-serif text-deep-red">{t(locale, 'overheadTitle')}</h1>
 
       <AdminForm endpoint="/api/admin/overhead" locale={locale} submitKey="saveOverhead">

@@ -16,7 +16,7 @@ export default async function AdminAppLayout({
   if (!(await isAdminSession())) redirect(localePath(locale, '/admin/login'));
 
   return (
-    <div className="min-h-screen max-w-3xl mx-auto p-4 md:p-8">
+    <div className="min-h-screen max-w-6xl mx-auto p-4 md:p-8">
       <div className="flex justify-end mb-4">
         <AdminLangToggle />
       </div>
