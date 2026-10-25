@@ -29,15 +29,16 @@ async function derive(pin: string, salt: Uint8Array, iterations: number): Promis
   return new Uint8Array(bits);
 }
 
-/** Format: pbkdf2$<iterations>$<salt base64>$<hash base64> */
+// Format: pbkdf2:<iterations>:<salt base64>:<hash base64>
+// Uses ':' rather than '$' because Next.js expands '$name' inside .env values, which corrupts the hash.
 export async function hashPin(pin: string): Promise<string> {
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const hash = await derive(pin, salt, PBKDF2_ITERATIONS);
-  return `pbkdf2$${PBKDF2_ITERATIONS}$${toB64(salt)}$${toB64(hash)}`;
+  return `pbkdf2:${PBKDF2_ITERATIONS}:${toB64(salt)}:${toB64(hash)}`;
 }
 
 export async function verifyPin(pin: string, stored: string | undefined): Promise<boolean> {
-  const [alg, iterations, saltB64, hashB64] = (stored ?? '').split('$');
+  const [alg, iterations, saltB64, hashB64] = (stored ?? '').split(':');
   const n = Number(iterations);
   if (alg !== 'pbkdf2' || !saltB64 || !hashB64 || !Number.isInteger(n) || n < 1000 || n > 1_000_000) return false;
   try {

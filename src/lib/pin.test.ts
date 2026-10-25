@@ -15,7 +15,7 @@ describe('PIN hashing', () => {
   it('never stores the PIN itself', async () => {
     const stored = await hashPin('2026');
     expect(stored).not.toContain('2026');
-    expect(stored.startsWith('pbkdf2$')).toBe(true);
+    expect(stored.startsWith('pbkdf2:')).toBe(true);
   });
 
   it('uses a different salt each time', async () => {
@@ -25,6 +25,6 @@ describe('PIN hashing', () => {
   it('rejects a missing or malformed stored value', async () => {
     expect(await verifyPin('2026', undefined)).toBe(false);
     expect(await verifyPin('2026', 'not-a-hash')).toBe(false);
-    expect(await verifyPin('2026', 'pbkdf2$5$abc$def')).toBe(false);
+    expect(await verifyPin('2026', 'pbkdf2:5:abc:def')).toBe(false);
   });
 });

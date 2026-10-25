@@ -11,4 +11,5 @@ const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 
 const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations: ITERATIONS, hash: 'SHA-256' }, key, 256);
 
 const b64 = (bytes) => Buffer.from(bytes).toString('base64');
-console.log(`pbkdf2$${ITERATIONS}$${b64(salt)}$${b64(new Uint8Array(bits))}`);
+// Uses ':' separators: Next.js expands '$' inside .env values.
+console.log(`pbkdf2:${ITERATIONS}:${b64(salt)}:${b64(new Uint8Array(bits))}`);
