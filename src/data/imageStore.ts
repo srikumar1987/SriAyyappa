@@ -13,15 +13,20 @@ export async function saveProductImage(productId: string, jpeg: Buffer): Promise
   if (process.env.DATA_BACKEND === 'sheets') {
     const { driveClient } = await import('./sheetsRepo');
     const drive = driveClient();
-    const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
+    const folderId = process.env.GOOGLE_PHOTOS_FOLDER_ID || process.env.GOOGLE_DRIVE_FOLDER_ID;
     const created = await drive.files.create({
       requestBody: { name: `${productId}.jpg`, ...(folderId ? { parents: [folderId] } : {}) },
       media: { mimeType: 'image/jpeg', body: Readable.from([jpeg]) },
+      supportsAllDrives: true,
       fields: 'id',
     });
     const fileId = created.data.id;
     if (!fileId) throw new Error('Drive did not return a file id');
-    await drive.permissions.create({ fileId, requestBody: { role: 'reader', type: 'anyone' } });
+    await drive.permissions.create({
+      fileId,
+      requestBody: { role: 'reader', type: 'anyone' },
+      supportsAllDrives: true,
+    });
     return `https://lh3.googleusercontent.com/d/${fileId}=w800`;
   }
 
