@@ -10,7 +10,7 @@ import { findIn, getProducts, toSearchable } from '@/lib/catalogue';
 import { productName } from '@/lib/productName';
 import { safeLocale } from '@/lib/paths';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Revalidate product data every 60 seconds
 
 export default async function ProductPage({ params }: { params: { locale: string; id: string } }) {
   const locale = safeLocale(params.locale);

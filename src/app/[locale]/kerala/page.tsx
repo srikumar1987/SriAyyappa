@@ -4,7 +4,7 @@ import CatalogueExplorer from '@/components/CatalogueExplorer';
 import { keralaCategories } from '@/data/products';
 import { getProducts } from '@/lib/catalogue';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Revalidate product data every 60 seconds
 
 export default async function KeralaPage() {
   const t = await getTranslations('common');

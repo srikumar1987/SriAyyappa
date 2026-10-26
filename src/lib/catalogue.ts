@@ -2,6 +2,7 @@ import { products as builtIn, categoryFromText, type Product } from '@/data/prod
 import { readStore, type ProductRecord } from '@/data/repo';
 import { isUnit } from '@/data/units';
 import { locales, type Locale } from '@/i18n';
+import { unstable_cache } from 'next/cache';
 
 export { toSearchable } from './searchIndex';
 
@@ -20,12 +21,19 @@ export function recordToProduct(r: ProductRecord): Product {
 }
 
 /** Built-in products plus products added by the admin. Built-in ids win if the sheet repeats them. */
-export async function getProducts(): Promise<Product[]> {
+async function getProductsUncached(): Promise<Product[]> {
   const store = await readStore();
   const builtInIds = new Set(builtIn.map((p) => p.id));
   const added = store.products.filter((r) => !builtInIds.has(r.productId)).map(recordToProduct);
   return [...builtIn, ...added];
 }
+
+/** Cached version of getProducts - revalidates every 60 seconds */
+export const getProducts = unstable_cache(
+  getProductsUncached,
+  ['products'],
+  { revalidate: 60, tags: ['products'] }
+);
 
 export function findIn(list: Product[], id: string): Product | undefined {
   return list.find((p) => p.id === id);

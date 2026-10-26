@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { revalidateTag } from 'next/cache';
 import { newId, updateStore } from '@/data/repo';
 import { saveProductImage } from '@/data/imageStore';
 import { categoryLabel, type Category } from '@/data/products';
@@ -90,6 +91,8 @@ export async function POST(req: Request) {
       expenseNote: '',
     });
   });
+
+  revalidateTag('products');
 
   return NextResponse.json({ ok: true, messageKey: 'productSaved', vars: { id: productId } });
 }

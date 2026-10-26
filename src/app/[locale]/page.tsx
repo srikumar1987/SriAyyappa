@@ -4,7 +4,7 @@ import ProductGrid from '@/components/ProductGrid';
 import { Link } from '@/navigation';
 import { getProducts } from '@/lib/catalogue';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Revalidate product data every 60 seconds
 
 export default async function HomePage() {
   const t = await getTranslations('common');
