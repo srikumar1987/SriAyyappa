@@ -39,5 +39,14 @@
   "aboutTitle": "About Us",
   "aboutText": "Ayyappa Pooja Store brings sacred pooja items and authentic Kerala products to your home. Every item is chosen with care, and our family is happy to help you find what you need.",
   "contactTitle": "Contact Us",
-  "contactText": "Visit the store, call us, or message us on WhatsApp. We are happy to help in your language."
+  "contactText": "Visit the store, call us, or message us on WhatsApp. We are happy to help in your language.",
+  "visitUs": "Visit Our Store",
+  "addressLabel": "Address",
+  "phoneLabel": "Phone",
+  "hoursLabel": "Opening Hours",
+  "hoursValue": "Open every day, 7:30 am – 8:00 pm",
+  "callUs": "Call Us",
+  "getDirections": "Get Directions",
+  "openInMaps": "Open in Google Maps",
+  "mapTitle": "Store location on Google Maps"
 }

@@ -3,6 +3,8 @@ import Header from '@/components/Header';
 import ProductGrid from '@/components/ProductGrid';
 import { Link } from '@/navigation';
 import { getProducts } from '@/lib/catalogue';
+import StoreInfo from '@/components/StoreInfo';
+import { business } from '@/lib/business';
 
 export const revalidate = 60; // Revalidate product data every 60 seconds
 
@@ -61,10 +63,22 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section className="py-16 px-4">
+        <div className="max-w-5xl mx-auto">
+          <h3 className="text-3xl font-serif text-center text-deep-red mb-12">{t('visitUs')}</h3>
+          <StoreInfo />
+        </div>
+      </section>
+
       <footer className="bg-deep-red text-white py-8 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <div className="text-4xl mb-4">🪷</div>
           <p className="text-gold font-serif text-xl mb-2">{t('storeName')}</p>
+          <p className="text-white/90 text-sm">{business.addressLines.join(', ')}</p>
+          <p className="text-white/90 text-sm mb-2">
+            <a href={`tel:${business.phoneTel}`} className="hover:text-gold">{business.phoneDisplay}</a>
+            {' · '}{t('hoursValue')}
+          </p>
           <p className="text-white/80 text-sm">© 2026 {t('rightsReserved')}</p>
         </div>
       </footer>
